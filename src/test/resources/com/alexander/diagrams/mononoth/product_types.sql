@@ -1,0 +1,21 @@
+Create Table: CREATE TABLE `product_types` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `family` varchar(255) NOT NULL,
+  `group` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `set` tinyint(1) NOT NULL DEFAULT '0',
+  `clarification` text NOT NULL,
+  `lock_version` int(11) DEFAULT '0',
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  `created_by_id` int(11) DEFAULT NULL,
+  `updated_by_id` int(11) DEFAULT NULL,
+  `unique_key` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `index_product_types_on_family_and_category_and_name` (`family`,`group`,`name`),
+  UNIQUE KEY `index_product_types_on_unique_key` (`unique_key`),
+  KEY `product_types_ibfk_created_by_id` (`created_by_id`),
+  KEY `product_types_ibfk_updated_by_id` (`updated_by_id`),
+  CONSTRAINT `product_types_ibfk_created_by_id` FOREIGN KEY (`created_by_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `product_types_ibfk_updated_by_id` FOREIGN KEY (`updated_by_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1361 DEFAULT CHARSET=utf8

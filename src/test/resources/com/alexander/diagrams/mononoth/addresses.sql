@@ -1,0 +1,21 @@
+CREATE TABLE `addresses` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `addressable_type` varchar(255) DEFAULT NULL,
+  `addressable_id` int(11) DEFAULT NULL,
+  `address1` varchar(255) DEFAULT NULL,
+  `address2` varchar(255) DEFAULT NULL,
+  `town` varchar(255) DEFAULT NULL,
+  `county` varchar(255) DEFAULT NULL,
+  `post_code` varchar(255) DEFAULT NULL,
+  `country` varchar(255) DEFAULT NULL,
+  `lock_version` int(11) DEFAULT '0',
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  `updated_by_id` int(11) DEFAULT NULL,
+  `created_by_id` int(11) DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `addresses_ibfk_updated_by_id` (`updated_by_id`),
+  KEY `addresses_ibfk_created_by_id` (`created_by_id`),
+  KEY `index_addresses_on_addressable_id_and_addressable_type` (`addressable_id`,`addressable_type`)
+) ENGINE=InnoDB AUTO_INCREMENT=76499493 DEFAULT CHARSET=utf8
