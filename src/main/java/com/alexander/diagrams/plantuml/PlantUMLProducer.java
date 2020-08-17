@@ -102,7 +102,7 @@ public class PlantUMLProducer implements DiagramProducer {
         return builder.toString();
     }
 
-    private String set(String value) {
+    String set(String value) {
         if (value == null) {
             return "";
         } else {
@@ -110,11 +110,11 @@ public class PlantUMLProducer implements DiagramProducer {
         }
     }
 
-    private String bold(String value){
+    String bold(String value){
         return "<b>" + value + "</b>";
     }
 
-    private String setType(Column column) {
+    String setType(Column column) {
         if (column.getType() != null) {
             if (column.getScale() == null) {
                 return SPACE + column.getType();

@@ -9,14 +9,17 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.LinkedList;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class PlantUMLProducerTest {
 
     PlantUMLProducer producer;
     Table table;
+    ForeignKey foreignKey;
 
     @BeforeEach
     void setup() {
@@ -27,12 +30,42 @@ class PlantUMLProducerTest {
                         Column.builder().name("Id").type("date").build(),
                         Column.builder().name("Name").type("varchar").scale("255").build()
                 )).build();
+        foreignKey = ForeignKey.builder()
+            .foreignKeyName("Id")
+            .sourceTable("People")
+            .sourceColumn("Name")
+            .build();
     }
 
 
     @Test
-    void testGenerateDiagram() throws IOException {
+    void testGenerateDiagram_withNullForeignKeys() throws IOException {
         producer.generateDiagram(Arrays.asList(table));
+    }
+
+    @Test
+    void testGenerateDiagram_withForreignKey() throws IOException {
+        Table foreignTable = Table.builder()
+            .name("Products")
+            .columns(Arrays.asList(
+                Column.builder().name("Id").type("date").build(),
+                Column.builder().name("Name").type("varchar").scale("255").build()
+            ))
+            .build();
+
+        Table table = Table.builder()
+            .name("People")
+            .columns(Arrays.asList(
+                Column.builder().name("Id").type("date").build(),
+                Column.builder().name("ProductName").type("varchar").scale("255").build()
+            )).foreignKeys(Arrays.asList(ForeignKey.builder()
+                .sourceColumn("Id")
+                .sourceTable("Products")
+                .foreignKeyName("ProductName")
+                .build()))
+            .build();
+
+        producer.generateDiagram(Arrays.asList(foreignTable, table));
     }
 
     @Test
@@ -55,6 +88,53 @@ class PlantUMLProducerTest {
                 Arrays.asList(Column.builder().build())
         ).build());
         assertThat(columnsString);
+    }
+
+    @Test
+    void testSet() {
+        assertThat(producer.set("Test")).isEqualTo(" Test");
+    }
+
+    @Test
+    void testSet_givenNull() {
+        assertThat(producer.set(null)).isEqualTo("");
+    }
+
+    @Test
+    void testBold() {
+        assertThat(producer.bold("Test")).isEqualTo("<b>Test</b>");
+    }
+
+    @Test
+    void testBold_givenNull() {
+        assertThat(producer.bold(null)).isEqualTo("<b>null</b>");
+    }
+
+    @Test
+    void testSetType_givenNullColumn() {
+        assertThrows(NullPointerException.class, () -> producer.setType(null));
+    }
+
+    @Test
+    void testSetType_givenColumnWithNoType() {
+        Column column = Column.builder()
+            .scale("2").build();
+        assertThat(producer.setType(column)).isEqualTo("");
+    }
+
+    @Test
+    void testSetType_givenColumnWithTypeOnly() {
+        Column column = Column.builder().type("int").build();
+        assertThat(producer.setType(column)).isEqualTo(" int");
+    }
+
+    @Test
+    void testSetType_givenColumnWithScale() {
+        Column column = Column.builder()
+            .type("int")
+            .scale("2")
+            .build();
+        assertThat(producer.setType(column)).isEqualTo(" int(2)");
     }
 
     @Test
@@ -96,45 +176,80 @@ class PlantUMLProducerTest {
         assertThat(columnString).isEqualTo("\t{field} <b>Id</b> date default '0'");
     }
 
-    @Disabled
     @Test
     void testBuildForeignKey_givenNullForeignKey() {
-        String foreignKeyString = producer.buildForeignKey(ForeignKey.builder().build(), Table.builder().build());
-        fail("Not yet implemented");
+        assertThrows(NullPointerException.class,
+            () -> producer.buildForeignKey(
+                null,
+                table)
+        );
     }
 
     @Test
     void testBuildForeignKey_givenTableIsNull() {
-        String foreignKeyString = producer.buildForeignKey(ForeignKey.builder().build(), Table.builder().build());
-        fail("Not yet implemented");
+        assertThrows(NullPointerException.class,
+            () -> producer.buildForeignKey(
+                foreignKey,
+                null)
+        );
+    }
+
+    @Test
+    void testBuildForeignKey_givenTableNameIsNull() {
+        String foreignKeyString = producer.buildForeignKey(
+            foreignKey,
+            Table.builder().build());
+        assertThat(foreignKeyString).isEqualTo("null::Id --> People::Name");
     }
 
     @Test
     void testBuildForeignKey_givenForeignKeyNameIsNull() {
-        String foreignKeyString = producer.buildForeignKey(ForeignKey.builder().build(), Table.builder().build());
-        fail("Not yet implemented");
+        String foreignKeyString = producer.buildForeignKey(
+            ForeignKey.builder()
+                .sourceTable("People")
+                .sourceColumn("Name")
+                .build(),
+            table);
+        assertThat(foreignKeyString).isEqualTo("Products::null --> People::Name");
     }
 
     @Test
     void testBuildForeignKey_givenSourceColumnIsNull() {
-        String foreignKeyString = producer.buildForeignKey(ForeignKey.builder().build(), Table.builder().build());
-        fail("Not yet implemented");
+        String foreignKeyString = producer.buildForeignKey(
+            ForeignKey.builder()
+                .foreignKeyName("Id")
+                .sourceTable("People")
+                .build(),
+            table);
+        assertThat(foreignKeyString).isEqualTo("Products::Id --> People::null");
     }
 
     @Test
     void testBuildForeignKey_givenSourceTableIsNull() {
-        String foreignKeyString = producer.buildForeignKey(ForeignKey.builder().build(), Table.builder().build());
-        fail("Not yet implemented");
+        String foreignKeyString = producer.buildForeignKey(
+            ForeignKey.builder()
+                .foreignKeyName("Id")
+                .sourceColumn("Name")
+                .build(),
+            table);
+        assertThat(foreignKeyString).isEqualTo("Products::Id --> null::Name");
     }
 
     @Test
     void testBuildForeignKey() {
-        String foreignKeyString = producer.buildForeignKey(ForeignKey.builder().build(), Table.builder().build());
-        fail("Not yet implemented");
+        String foreignKeyString = producer.buildForeignKey(
+            ForeignKey.builder()
+                .foreignKeyName("Id")
+                .sourceTable("People")
+                .sourceColumn("Name")
+                .build(),
+            table);
+        assertThat(foreignKeyString).isEqualTo("Products::Id --> People::Name");
     }
 
 
     @Test
+    @Disabled
     void testBuildForeignKeys_whenForeignKeySourceTableIsMissing() {
 //        String columnString = producer.buildColumn(Column.builder().name("Id").type("date").defaultValue("'0'").build());
 //        assertThat(columnString).isEqualTo("\t{field} <b>Id</b> date default '0'");

@@ -7,6 +7,7 @@ import com.alexander.diagrams.model.PrimaryKey;
 import com.alexander.diagrams.model.Table;
 import com.alexander.diagrams.plantuml.DiagramProducer;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -43,9 +44,9 @@ class MySQLDbERGeneratorTest {
     private static final String KEY2 = "key2";
 
     @Test
-    public void testRead() throws IOException {
+    void testRead() throws IOException {
         String filename = "attribute_values";
-        Path myFile = Path.of(testPath, packagePath, filename + ".sql");
+        Path myFile = Path.of(testPath, packagePath, "mononoth", filename + ".sql");
         System.out.println(myFile);
         assertTrue(Files.exists(myFile));
         List<String> lines = dbERGenerator.read(myFile);
@@ -53,12 +54,13 @@ class MySQLDbERGeneratorTest {
     }
 
     @Test
+    @Disabled
     public void testToTable() {
         fail("Not yet implemented");
     }
 
     @Test
-    public void testAddColumns() {
+    void testAddColumns() {
         //Check we operate on the sublist
         //Check that parser.toColumns is called for each line
         //Check that we get back an Optional that is present
@@ -76,7 +78,7 @@ class MySQLDbERGeneratorTest {
     }
 
     @Test
-    public void testAddColumns_whenNoColumnFound() {
+    void testAddColumns_whenNoColumnFound() {
         when(parser.toColumn("")).thenReturn(null);
 
         Optional<Table> table = generator.addColumns(Arrays.asList("",""), tableOptional);
@@ -86,7 +88,7 @@ class MySQLDbERGeneratorTest {
     }
 
     @Test
-    public void testAddForeignKey() {
+    void testAddForeignKey() {
         when(parser.toForeignKey(""))
                 .thenReturn(ForeignKey.builder().foreignKeyName(KEY1).build())
                 .thenReturn(ForeignKey.builder().foreignKeyName(KEY2).build());
@@ -100,7 +102,7 @@ class MySQLDbERGeneratorTest {
     }
 
     @Test
-    public void testAddForeignKey_whenNoForeignKeyFound() {
+    void testAddForeignKey_whenNoForeignKeyFound() {
         when(parser.toForeignKey(""))
                 .thenReturn(null)
                 .thenReturn(ForeignKey.builder().foreignKeyName(KEY2).build());
@@ -113,7 +115,7 @@ class MySQLDbERGeneratorTest {
     }
 
     @Test
-    public void testAddPrimaryKey() {
+    void testAddPrimaryKey() {
         when(parser.toPrimaryKey(""))
                 .thenReturn(PrimaryKey.builder().keyName(KEY1).build())
                 .thenReturn(PrimaryKey.builder().keyName(KEY2).build());
@@ -127,7 +129,7 @@ class MySQLDbERGeneratorTest {
     }
 
     @Test
-    public void testAddPrimaryKey_whenNoPrimaryKeyFound() {
+    void testAddPrimaryKey_whenNoPrimaryKeyFound() {
        when(parser.toPrimaryKey(""))
                 .thenReturn(null)
                 .thenReturn(PrimaryKey.builder().keyName(KEY2).build());
@@ -140,12 +142,13 @@ class MySQLDbERGeneratorTest {
     }
 
     @Test
-    public void testToDiagram() {
+    @Disabled
+    void testToDiagram() {
         fail("Not yet implemented");
     }
 
     @BeforeAll
-    private static void path() {
+    static void path() {
         packagePath = DbERGenerator.class.getPackageName()
                 .replace(".", File.separator);
     }
