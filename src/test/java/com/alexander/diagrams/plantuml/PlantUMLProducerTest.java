@@ -6,10 +6,13 @@ import com.alexander.diagrams.model.Table;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.matchers.Null;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -238,21 +241,72 @@ class PlantUMLProducerTest {
     @Test
     void testBuildForeignKey() {
         String foreignKeyString = producer.buildForeignKey(
-            ForeignKey.builder()
-                .foreignKeyName("Id")
-                .sourceTable("People")
-                .sourceColumn("Name")
-                .build(),
+            foreignKey,
             table);
         assertThat(foreignKeyString).isEqualTo("Products::Id --> People::Name");
     }
 
 
     @Test
-    @Disabled
-    void testBuildForeignKeys_whenForeignKeySourceTableIsMissing() {
-//        String columnString = producer.buildColumn(Column.builder().name("Id").type("date").defaultValue("'0'").build());
-//        assertThat(columnString).isEqualTo("\t{field} <b>Id</b> date default '0'");
-        fail("Not yet implemented");
+    void testBuildForeignKeys_whenTableNull() {
+        assertThrows(NullPointerException.class,
+            () -> producer.buildForeignKeys(null, Map.of()));
+    }
+
+    @Test
+    void testBuildForeignKeys_whenForeignKeyListIsNull() {
+        //Due to joining clause
+        assertThat(producer.buildForeignKeys(Table.builder().build(), Map.of()))
+            .isEqualTo("\n");
+    }
+
+    @Test
+    void testBuildForeignKeys_whenForeignKeyIsNull() {
+        List<ForeignKey> foreignKeys = new LinkedList<>();
+        foreignKeys.add(null);
+
+        assertThat(producer.buildForeignKeys(Table.builder()
+                .foreignKeys(foreignKeys)
+                .build(),
+            Map.of()))
+            .isEqualTo("\n");
+    }
+
+    @Test
+    void testBuildForeignKeys_whenTableMapIsNull() {
+        assertThrows(NullPointerException.class,
+            () -> producer.buildForeignKeys(Table.builder()
+                .foreignKeys(List.of(foreignKey))
+                .build(),
+            null));
+    }
+
+    @Test
+    void testBuildForeignKeys_whenForeignKeySourceTableIsNotInMap() {
+        assertThat(producer.buildForeignKeys(
+            Table.builder()
+                .foreignKeys(List.of(foreignKey))
+                .build(),
+            Map.of()))
+        .isEqualTo("\n");
+    }
+
+    @Test
+    void testBuildForeignKeys_whenShowForeignKeysIsFalse() {
+        producer = new PlantUMLProducer("My Diagram", "mydiagram.png", false);
+        table.setForeignKeys(List.of(foreignKey));
+        assertThat(producer.buildForeignKeys(
+            table,
+            Map.of(foreignKey.getSourceTable(), table)))
+            .isEqualTo("\n");
+    }
+
+    @Test
+    void testBuildForeignKeys() {
+        table.setForeignKeys(List.of(foreignKey));
+        assertThat(producer.buildForeignKeys(
+            table,
+            Map.of(foreignKey.getSourceTable(), table)))
+            .isEqualTo("Products::Id --> People::Name\n");
     }
 }
