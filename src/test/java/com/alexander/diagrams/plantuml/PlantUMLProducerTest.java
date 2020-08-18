@@ -6,7 +6,6 @@ import com.alexander.diagrams.model.Table;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.matchers.Null;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -16,13 +15,12 @@ import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
 
 class PlantUMLProducerTest {
 
-    PlantUMLProducer producer;
-    Table table;
-    ForeignKey foreignKey;
+    private PlantUMLProducer producer;
+    private Table table;
+    private ForeignKey foreignKey;
 
     @BeforeEach
     void setup() {

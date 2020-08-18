@@ -183,9 +183,24 @@ class MySQLRegexParserTest {
     }
 
     @Test
+    void testToForeignKey_whenNotAForeignKey() {
+        assertThat(parser.toForeignKey(" aBa ")).isNull();
+    }
+
+    @Test
     void testToPrimaryKey() {
         String input = "  PRIMARY KEY (`id`),";
         PrimaryKey primaryKey = parser.toPrimaryKey(input);
         assertThat(primaryKey.getKeyName()).isEqualTo("id");
+    }
+
+    @Test
+    void testToPrimaryKey_whenNotAPrimaryKey() {
+        assertThat(parser.toPrimaryKey(" aBa ")).isNull();
+    }
+
+    @Test
+    void testToUniqueConstraint() {
+        assertThat(parser.toUniqueConstraint(" aBa ")).isNull();
     }
 }
