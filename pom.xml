@@ -13,6 +13,7 @@
         <java.version>11</java.version>
         <plantuml.version>8059</plantuml.version>
         <lombok.version>1.18.10</lombok.version>
+        <jackson-databind.version>2.10.0</jackson-databind.version>
         <junit.version>5.5.2</junit.version>
         <assertj.version>3.13.2</assertj.version>
         <mockito.version>3.1.0</mockito.version>
@@ -54,7 +55,12 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.10.0</version>
+            <version>${jackson-databind.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs-annotations</artifactId>
+            <version>${spotbugs-maven-plugin.version}</version>
         </dependency>
     </dependencies>
     <build>

@@ -1,6 +1,7 @@
 package com.alexander.diagrams;
 
 import com.alexander.diagrams.model.Table;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.io.File;
 import java.nio.file.DirectoryStream;
@@ -12,6 +13,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Runner {
+    @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE", justification = "https://github.com/spotbugs/spotbugs/issues/756")
     public static void main(String[] args) throws Exception {
 
         String testPath = "src/test/resources/";
