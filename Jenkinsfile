@@ -18,7 +18,7 @@ pipeline {
                   sourcePattern: 'src/main/java',
                   exclusionPattern: 'src/test*'
             )
-             recordIssues enabledForFailure: true, tool: spotBugs(pattern: '**/target/spotbugsXml.xml')
+            recordIssues enabledForFailure: true, tool: spotBugs(pattern: '**/target/spotbugsXml.xml')
         }
     }
 }

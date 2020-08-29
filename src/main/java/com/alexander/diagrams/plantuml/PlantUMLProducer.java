@@ -42,26 +42,28 @@ public class PlantUMLProducer implements DiagramProducer {
     private static final String END = "@enduml";
     private static final String TITLE = "Title: %s";
 
-    public void generateDiagram(List<Table> tables) throws IOException {
+    public void generateDiagram(List<Table> tables) {
         Map<String, Table> tableMap = toMap(tables);
-        OutputStream png = new FileOutputStream(Paths.get(filename).toString());
-
-        StringBuilder diagramSource = new StringBuilder();
-        diagramSource.append(START).append(NEWLINE);
-        diagramSource.append(String.format(TITLE, title)).append(NEWLINE);
-        for (Table table : tables) {
-            diagramSource.append(tableFunction(table));
-        }
-        diagramSource.append(
+        try (OutputStream png = new FileOutputStream(Paths.get(filename).toString())) {
+            StringBuilder diagramSource = new StringBuilder();
+            diagramSource.append(START).append(NEWLINE);
+            diagramSource.append(String.format(TITLE, title)).append(NEWLINE);
+            for (Table table : tables) {
+                diagramSource.append(tableFunction(table));
+            }
+            diagramSource.append(
                 tables.stream().map(table -> buildForeignKeys(table, tableMap))
-                        .filter(string -> nonNull(string) && !string.trim().isEmpty())
-                        .collect(joining("", "", NEWLINE))
-        );
-        diagramSource.append(END).append(NEWLINE);
+                    .filter(string -> nonNull(string) && !string.trim().isEmpty())
+                    .collect(joining("", "", NEWLINE))
+            );
+            diagramSource.append(END).append(NEWLINE);
 
-        System.out.println(diagramSource.toString());
-        SourceStringReader reader = new SourceStringReader(diagramSource.toString());
-        reader.generateImage(png);
+            System.out.println(diagramSource.toString());
+            SourceStringReader reader = new SourceStringReader(diagramSource.toString());
+            reader.generateImage(png);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     Map<String, Table> toMap(List<Table> tables) {
