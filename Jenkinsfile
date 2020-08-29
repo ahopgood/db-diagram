@@ -18,6 +18,9 @@ pipeline {
                   sourcePattern: 'src/main/java',
                   exclusionPattern: 'src/test*'
             )
+            def spotbugs = scanForIssues tool: spotBugs(pattern: '**/target/spotbugsXml.xml')
+            publishIssues issues: [spotbugs]
+
         }
     }
 }
