@@ -18,10 +18,7 @@ pipeline {
                   sourcePattern: 'src/main/java',
                   exclusionPattern: 'src/test*'
             )
-            stage('Pubish Spotbugs') {
-                def spotbugs = scanForIssues tool: spotBugs(pattern: '**/target/spotbugsXml.xml')
-                publishIssues issues: [spotbugs]
-            }
+             recordIssues enabledForFailure: true, tool: spotBugs(pattern: '**/target/spotbugsXml.xml')
         }
     }
 }
