@@ -19,7 +19,6 @@ pipeline {
                   exclusionPattern: 'src/test*'
             )
             recordIssues enabledForFailure: true, tool: spotBugs(pattern: '**/target/spotbugsXml.xml')
-            publishIssues trendChartType: TOOLS_ONLY
         }
     }
 }
