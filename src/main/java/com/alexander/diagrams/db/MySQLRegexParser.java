@@ -5,7 +5,7 @@ import com.alexander.diagrams.model.ForeignKey;
 import com.alexander.diagrams.model.PrimaryKey;
 import com.alexander.diagrams.model.Table;
 import com.alexander.diagrams.model.UniqueConstraint;
-import com.fasterxml.jackson.databind.util.PrimitiveArrayBuilder;
+import net.sourceforge.plantuml.command.regex.Matcher2;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -98,10 +98,14 @@ public class MySQLRegexParser implements DatabaseSyntaxParser {
 
     private static final String UNIQUE_CONSTRAINT_REGEX = "";
     private static final Pattern UNIQUE_CONSTRAINT_PATTERN = Pattern.compile(UNIQUE_CONSTRAINT_REGEX);
-    private static final String UNIQUE_CONSTRAINT_GROUP = "";
+    private static final String UNIQUE_CONSTRAINT_GROUP = "uniqueConstraint";
 
     public UniqueConstraint toUniqueConstraint(String line) {
-
+        Matcher matcher = UNIQUE_CONSTRAINT_PATTERN.matcher(line);
+        if (matcher.matches()) {
+            return UniqueConstraint.builder()
+                .indexName(matcher.group(UNIQUE_CONSTRAINT_GROUP)).build();
+        }
         return null;
     }
 }
