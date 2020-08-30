@@ -27,19 +27,23 @@ public class MySQLRegexParser implements DatabaseSyntaxParser {
         }
         return Table.builder().name(tableName).build();
     }
-
-    private static final String ATTRIBUTES_REGEX = "((?<notnull>NOT NULL)|(?<autoincrement>AUTO_INCREMENT)|(DEFAULT (?<default>NULL|'[0-9]'))| )*";
+//    private static final String ATTRIBUTES_REGEX = "((?<notnull> NOT NULL)?(?<autoincrement> AUTO_INCREMENT)?( DEFAULT (?<default>NULL|'[0-9]')?))";
+    private static final String ATTRIBUTES_REGEX = "((?<notnull> NOT NULL)?(?<autoincrement> AUTO_INCREMENT)?( DEFAULT (?<default>NULL|'[0-9]'))?)";
     private static final String AUTO_INCREMENT_GROUP = "autoincrement";
     private static final String NOT_NULL_GROUP = "notnull";
     private static final String DEFAULT_GROUP = "default";
 
-    private static final String NUMBER_SCALE_REGEX = "(\\((?<scale>[1-9][0-9]*|[1-9][0-9]*,[1-9][0-9]*)\\))?";
+    // decimal scale (m,d) where m = 1 to 65 and d = 0 - 30
+    // int scale maximum int (10)
+    // varchar scale maximum (65,535) - using [0-9]{0,5} for brevity allowing numbers from 0 to 99,999
+    // see {@link https://dev.mysql.com/doc/refman/8.0/en/char.html}
+    private static final String NUMBER_SCALE_REGEX = "(\\((?<scale>([0-9]{0,5})|([0-9]|[1-5][0-9]|[6][1-5]),([0-9]|[1-2][0-9]|[3][0]))\\))?";
     private static final String SCALE_GROUP = "scale";
 
     private static final String DATATYPE_REGEX = "(?<datatype>int|varchar|tinyint|datetime|decimal|date)" + NUMBER_SCALE_REGEX;
     private static final String DATATYPE_GROUP = "datatype";
 
-    private static final String COLUMN_REGEX = ".*`(?<columnName>[a-zA-Z-0-9\\-_]*)` " + DATATYPE_REGEX + ATTRIBUTES_REGEX + ".*";
+    private static final String COLUMN_REGEX = "\\s*`(?<columnName>[a-zA-Z-0-9\\-_]+)` " + DATATYPE_REGEX + ATTRIBUTES_REGEX + ",";
     private static final String COLUMN_NAME_GROUP = "columnName";
 
     private static final Pattern COLUMN_PATTERN = Pattern.compile(COLUMN_REGEX);
