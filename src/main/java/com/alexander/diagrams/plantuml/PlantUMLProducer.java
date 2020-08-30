@@ -3,7 +3,9 @@ package com.alexander.diagrams.plantuml;
 import com.alexander.diagrams.model.Column;
 import com.alexander.diagrams.model.ForeignKey;
 import com.alexander.diagrams.model.Table;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.sourceforge.plantuml.SourceStringReader;
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -19,6 +21,9 @@ import java.util.stream.Collectors;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
 
+@SuppressFBWarnings(value = {"WEAK_FILENAMEUTILS","PATH_TRAVERSAL_OUT"} ,
+    justification = "WEAK_FILENAMEUTILS: Null byte injection is fixed in Java 7u40 and higher https://bugs.java.com/bugdatabase/view_bug.do?bug_id=8014846. " +
+        "PATH_TRAVERSAL_OUT FilenameUtils.getName() strips out the path from the filename preventing path traversal, the file will be written to a location relative to the running code.")
 public class PlantUMLProducer implements DiagramProducer {
 
     private final String title;
@@ -27,13 +32,13 @@ public class PlantUMLProducer implements DiagramProducer {
 
     public PlantUMLProducer(String title, String filename) {
         this.title = title;
-        this.filename = filename;
+        this.filename = FilenameUtils.getName(filename);
         this.showForeignKeys = true;
     }
 
     public PlantUMLProducer(String title, String filename, boolean showForeignKeys) {
         this.title = title;
-        this.filename = filename;
+        this.filename = FilenameUtils.getName(filename);
         this.showForeignKeys = showForeignKeys;
     }
 
@@ -44,22 +49,22 @@ public class PlantUMLProducer implements DiagramProducer {
 
     public void generateDiagram(List<Table> tables) {
         Map<String, Table> tableMap = toMap(tables);
-        try (OutputStream png = new FileOutputStream(Paths.get(filename).toString())) {
-            StringBuilder diagramSource = new StringBuilder();
-            diagramSource.append(START).append(NEWLINE);
-            diagramSource.append(String.format(TITLE, title)).append(NEWLINE);
-            for (Table table : tables) {
-                diagramSource.append(tableFunction(table));
-            }
-            diagramSource.append(
-                tables.stream().map(table -> buildForeignKeys(table, tableMap))
-                    .filter(string -> nonNull(string) && !string.trim().isEmpty())
-                    .collect(joining("", "", NEWLINE))
-            );
-            diagramSource.append(END).append(NEWLINE);
+        StringBuilder diagramSource = new StringBuilder();
+        diagramSource.append(START).append(NEWLINE);
+        diagramSource.append(String.format(TITLE, title)).append(NEWLINE);
+        for (Table table : tables) {
+            diagramSource.append(tableFunction(table));
+        }
+        diagramSource.append(
+            tables.stream().map(table -> buildForeignKeys(table, tableMap))
+                .filter(string -> nonNull(string) && !string.trim().isEmpty())
+                .collect(joining("", "", NEWLINE))
+        );
+        diagramSource.append(END).append(NEWLINE);
 
-            System.out.println(diagramSource.toString());
-            SourceStringReader reader = new SourceStringReader(diagramSource.toString());
+        System.out.println(diagramSource.toString());
+        SourceStringReader reader = new SourceStringReader(diagramSource.toString());
+        try (OutputStream png = new FileOutputStream(Paths.get(FilenameUtils.getName(filename)).toString())) {
             reader.generateImage(png);
         } catch (IOException e) {
             e.printStackTrace();
