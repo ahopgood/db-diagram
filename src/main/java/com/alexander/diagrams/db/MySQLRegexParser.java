@@ -5,7 +5,6 @@ import com.alexander.diagrams.model.ForeignKey;
 import com.alexander.diagrams.model.PrimaryKey;
 import com.alexander.diagrams.model.Table;
 import com.alexander.diagrams.model.UniqueConstraint;
-import net.sourceforge.plantuml.command.regex.Matcher2;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
