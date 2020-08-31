@@ -4,9 +4,6 @@ import com.alexander.diagrams.model.Column;
 import com.alexander.diagrams.model.ForeignKey;
 import com.alexander.diagrams.model.Table;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import net.sourceforge.plantuml.SourceStringReader;
-import org.apache.commons.io.FilenameUtils;
-
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -17,6 +14,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import net.sourceforge.plantuml.SourceStringReader;
+import org.apache.commons.io.FilenameUtils;
+
 
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;

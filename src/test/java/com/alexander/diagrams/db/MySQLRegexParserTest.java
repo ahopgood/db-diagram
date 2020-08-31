@@ -6,6 +6,7 @@ import com.alexander.diagrams.model.PrimaryKey;
 import com.alexander.diagrams.model.Table;
 import org.junit.jupiter.api.Test;
 
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class MySQLRegexParserTest {

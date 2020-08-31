@@ -2,7 +2,6 @@ package com.alexander.diagrams;
 
 import com.alexander.diagrams.model.Table;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 import java.io.File;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;

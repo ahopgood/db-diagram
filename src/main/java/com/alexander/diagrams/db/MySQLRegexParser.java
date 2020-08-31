@@ -5,8 +5,6 @@ import com.alexander.diagrams.model.ForeignKey;
 import com.alexander.diagrams.model.PrimaryKey;
 import com.alexander.diagrams.model.Table;
 import com.alexander.diagrams.model.UniqueConstraint;
-import com.fasterxml.jackson.databind.util.PrimitiveArrayBuilder;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

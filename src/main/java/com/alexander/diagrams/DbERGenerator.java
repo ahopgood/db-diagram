@@ -3,15 +3,15 @@ package com.alexander.diagrams;
 import com.alexander.diagrams.db.DatabaseSyntaxParser;
 import com.alexander.diagrams.db.MySQLRegexParser;
 import com.alexander.diagrams.model.Table;
-import com.alexander.diagrams.plantuml.PlantUMLProducer;
 import com.alexander.diagrams.plantuml.DiagramProducer;
-
+import com.alexander.diagrams.plantuml.PlantUMLProducer;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
 
 import static java.util.stream.Collectors.toList;
 
