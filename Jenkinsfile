@@ -19,7 +19,7 @@ pipeline {
                   exclusionPattern: 'src/test*'
             )
             recordIssues enabledForFailure: true, tool: spotBugs(pattern: '**/target/spotbugsXml.xml')
-            recordIssues enabledForFailure: true, tool: checkStyle(pattern: '**/target/checkstyle-result.xml')
+            recordIssues enabledForFailure: true, tool: checkStyle()
         }
     }
 }
