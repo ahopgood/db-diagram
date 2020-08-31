@@ -42,8 +42,8 @@
 
     <module name="LineLength">
         <property name="fileExtensions" value="java"/>
-        <property name="max" value="100"/>
-        <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+        <property name="max" value="120"/>
+        <property name="ignorePattern" value="2^package.*|^import.*|a href|href|http://|https://|ftp://"/>
     </module>
 
     <module name="TreeWalker">
