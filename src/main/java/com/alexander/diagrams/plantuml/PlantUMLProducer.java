@@ -21,9 +21,10 @@ import org.apache.commons.io.FilenameUtils;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
 
-@SuppressFBWarnings(value = {"WEAK_FILENAMEUTILS","PATH_TRAVERSAL_OUT"} ,
+@SuppressFBWarnings(value = {"WEAK_FILENAMEUTILS", "PATH_TRAVERSAL_OUT"} ,
     justification = "WEAK_FILENAMEUTILS: Null byte injection is fixed in Java 7u40 and higher https://bugs.java.com/bugdatabase/view_bug.do?bug_id=8014846. " +
-        "PATH_TRAVERSAL_OUT FilenameUtils.getName() strips out the path from the filename preventing path traversal, the file will be written to a location relative to the running code.")
+        "PATH_TRAVERSAL_OUT FilenameUtils.getName() strips out the path from the filename preventing path traversal," +
+        " the file will be written to a location relative to the running code.")
 public class PlantUMLProducer implements DiagramProducer {
 
     private final String title;
@@ -145,7 +146,8 @@ public class PlantUMLProducer implements DiagramProducer {
 
     protected String buildForeignKey(ForeignKey foreignKey, Table table) {
         StringBuilder builder = new StringBuilder();
-        builder.append(table.getName() + "::" + foreignKey.getForeignKeyName() + " --> " + foreignKey.getSourceTable() + "::" + foreignKey.getSourceColumn());
+        builder.append(table.getName() + "::" + foreignKey.getForeignKeyName() +
+            " --> " + foreignKey.getSourceTable() + "::" + foreignKey.getSourceColumn());
         return builder.toString();
     }
 }
