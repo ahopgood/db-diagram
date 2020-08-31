@@ -160,8 +160,10 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>validate</id>
-                        <phase>validate</phase>
+                        <id>verify</id>
+                        <phase>verify</phase>
+                        <!-- Binding to verify instead of validate so checkstyle fails the build after tests have run
+                        to aid with post build reporting -->
                         <goals>
                             <goal>check</goal>
                         </goals>
