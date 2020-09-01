@@ -78,7 +78,11 @@ public class MySqlRegexParser implements DatabaseSyntaxParser {
     private static final String SOURCE_TABLE_GROUP = "sourceTable";
     private static final String SOURCE_COLUMN_GROUP = "sourceColumn";
 
-
+    /**
+     * Converts a String representing a foreign key constraint from a describe table statement into a ForeignKey object.
+     * @param line The String to convert into a ForeignKey object.
+     * @return {@link ForeignKey}
+     */
     public ForeignKey toForeignKey(String line) {
         Matcher matcher = FOREIGN_KEY_PATTERN.matcher(line);
         if (matcher.matches()) {
@@ -95,6 +99,11 @@ public class MySqlRegexParser implements DatabaseSyntaxParser {
     private static final Pattern PRIMARY_KEY_PATTERN = Pattern.compile(PRIMARY_KEY_REGEX);
     private static final String PRIMARY_KEY_GROUP = "primaryKey";
 
+    /**
+     * Converts a String representing a primary key constraint from a describe table statement into a PrimaryKey object.
+     * @param line The String to convert into a PrimaryKey object.
+     * @return {@link PrimaryKey}
+     */
     public PrimaryKey toPrimaryKey(String line) {
         Matcher matcher = PRIMARY_KEY_PATTERN.matcher(line);
         if (matcher.matches()) {

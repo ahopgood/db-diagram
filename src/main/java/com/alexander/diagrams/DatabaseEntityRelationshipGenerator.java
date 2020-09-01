@@ -33,6 +33,11 @@ public class DatabaseEntityRelationshipGenerator {
         return lines;
     }
 
+    /**
+     * Convert a line of lines representing a database create statement into a Table object.
+      * @param lines The List of Strings to convert to a table.
+     * @return {@link Table}
+     */
     public Optional<Table> toTable(List<String> lines) {
         Optional<Table> table = lines.subList(0, 1)
                 .stream()

@@ -12,6 +12,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Runner {
+    /**
+     * A main (temporary) entry point for integration testing.
+     * @param args not used
+     * @throws Exception any Runtime Exception
+     */
     @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE", justification = "https://github.com/spotbugs/spotbugs/issues/756")
     public static void main(String[] args) throws Exception {
 

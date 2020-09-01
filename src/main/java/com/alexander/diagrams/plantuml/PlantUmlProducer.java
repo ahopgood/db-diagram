@@ -30,12 +30,23 @@ public class PlantUmlProducer implements DiagramProducer {
     private final String filename;
     private final boolean showForeignKeys;
 
+    /**
+     * Class to create a PlantUML diagram.
+     * @param title The diagram title
+     * @param filename The name of the output file, location relative to executing code
+     */
     public PlantUmlProducer(String title, String filename) {
         this.title = title;
         this.filename = FilenameUtils.getName(filename);
         this.showForeignKeys = true;
     }
 
+    /**
+     * Class to create a PlantUML diagram.
+     * @param title The diagram title
+     * @param filename The name of the output file, location relative to executing code
+     * @param showForeignKeys toggles whether or not to show foreign key relationships
+     */
     public PlantUmlProducer(String title, String filename, boolean showForeignKeys) {
         this.title = title;
         this.filename = FilenameUtils.getName(filename);
@@ -46,6 +57,10 @@ public class PlantUmlProducer implements DiagramProducer {
     private static final String END = "@enduml";
     private static final String TITLE = "Title: %s";
 
+    /**
+     * Creates a digaram based on the constructor args from the input table data.
+     * @param tables a List of tables
+     */
     public void generateDiagram(List<Table> tables) {
         StringBuilder diagramSource = new StringBuilder();
         diagramSource.append(START).append(NEWLINE);
