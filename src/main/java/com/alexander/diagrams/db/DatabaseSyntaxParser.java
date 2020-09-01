@@ -8,8 +8,12 @@ import com.alexander.diagrams.model.UniqueConstraint;
 
 public interface DatabaseSyntaxParser {
     Table toTable(String line);
+
     Column toColumn(String line);
+
     PrimaryKey toPrimaryKey(String line);
+
     ForeignKey toForeignKey(String line);
+
     UniqueConstraint toUniqueConstraint(String line);
 }

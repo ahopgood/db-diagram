@@ -5,12 +5,10 @@ import com.alexander.diagrams.model.ForeignKey;
 import com.alexander.diagrams.model.PrimaryKey;
 import com.alexander.diagrams.model.Table;
 import com.alexander.diagrams.model.UniqueConstraint;
-import com.fasterxml.jackson.databind.util.PrimitiveArrayBuilder;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MySQLRegexParser implements DatabaseSyntaxParser {
+public class MySqlRegexParser implements DatabaseSyntaxParser {
 
     private static final String MYSQL_NAME_REGEX = "[a-zA-Z0-9\\-_]*";
 
@@ -27,8 +25,11 @@ public class MySQLRegexParser implements DatabaseSyntaxParser {
         }
         return Table.builder().name(tableName).build();
     }
-//    private static final String ATTRIBUTES_REGEX = "((?<notnull> NOT NULL)?(?<autoincrement> AUTO_INCREMENT)?( DEFAULT (?<default>NULL|'[0-9]')?))";
-    private static final String ATTRIBUTES_REGEX = "((?<notnull> NOT NULL)?(?<autoincrement> AUTO_INCREMENT)?( DEFAULT (?<default>NULL|'[0-9]'))?)";
+    //    private static final String ATTRIBUTES_REGEX =
+    //      "((?<notnull> NOT NULL)?(?<autoincrement> AUTO_INCREMENT)?( DEFAULT (?<default>NULL|'[0-9]')?))";
+
+    private static final String ATTRIBUTES_REGEX =
+        "((?<notnull> NOT NULL)?(?<autoincrement> AUTO_INCREMENT)?( DEFAULT (?<default>NULL|'[0-9]'))?)";
     private static final String AUTO_INCREMENT_GROUP = "autoincrement";
     private static final String NOT_NULL_GROUP = "notnull";
     private static final String DEFAULT_GROUP = "default";
@@ -37,13 +38,16 @@ public class MySQLRegexParser implements DatabaseSyntaxParser {
     // int scale maximum int (10)
     // varchar scale maximum (65,535) - using [0-9]{0,5} for brevity allowing numbers from 0 to 99,999
     // see {@link https://dev.mysql.com/doc/refman/8.0/en/char.html}
-    private static final String NUMBER_SCALE_REGEX = "(\\((?<scale>([0-9]{0,5})|([0-9]|[1-5][0-9]|[6][1-5]),([0-9]|[1-2][0-9]|[3][0]))\\))?";
+    private static final String NUMBER_SCALE_REGEX =
+        "(\\((?<scale>([0-9]{0,5})|([0-9]|[1-5][0-9]|[6][1-5]),([0-9]|[1-2][0-9]|[3][0]))\\))?";
     private static final String SCALE_GROUP = "scale";
 
-    private static final String DATATYPE_REGEX = "(?<datatype>int|varchar|tinyint|datetime|decimal|date)" + NUMBER_SCALE_REGEX;
+    private static final String DATATYPE_REGEX =
+        "(?<datatype>int|varchar|tinyint|datetime|decimal|date)" + NUMBER_SCALE_REGEX;
     private static final String DATATYPE_GROUP = "datatype";
 
-    private static final String COLUMN_REGEX = "\\s*`(?<columnName>[a-zA-Z-0-9\\-_]+)` " + DATATYPE_REGEX + ATTRIBUTES_REGEX + ",";
+    private static final String COLUMN_REGEX =
+        "\\s*`(?<columnName>[a-zA-Z-0-9\\-_]+)` " + DATATYPE_REGEX + ATTRIBUTES_REGEX + ",";
     private static final String COLUMN_NAME_GROUP = "columnName";
 
     private static final Pattern COLUMN_PATTERN = Pattern.compile(COLUMN_REGEX);
@@ -64,16 +68,21 @@ public class MySQLRegexParser implements DatabaseSyntaxParser {
         return null;
     }
 
-    private static final String FOREIGN_KEY_REGEX  = "\\s*CONSTRAINT `" + MYSQL_NAME_REGEX +
-            "` FOREIGN KEY \\(`(?<foreignKeyName>" + MYSQL_NAME_REGEX + ")`\\) REFERENCES `(?<sourceTable>" + MYSQL_NAME_REGEX + ")` " +
-            "\\(`(?<sourceColumn>" + MYSQL_NAME_REGEX + ")`\\).*";
+    private static final String FOREIGN_KEY_REGEX  = "\\s*CONSTRAINT `" + MYSQL_NAME_REGEX
+        + "` FOREIGN KEY \\(`(?<foreignKeyName>" + MYSQL_NAME_REGEX + ")`\\) "
+        + "REFERENCES "
+        + "`(?<sourceTable>" + MYSQL_NAME_REGEX + ")` \\(`(?<sourceColumn>" + MYSQL_NAME_REGEX + ")`\\).*";
     private static final Pattern FOREIGN_KEY_PATTERN = Pattern.compile(FOREIGN_KEY_REGEX);
 
     private static final String FOREIGN_KEY_NAME_GROUP = "foreignKeyName";
     private static final String SOURCE_TABLE_GROUP = "sourceTable";
     private static final String SOURCE_COLUMN_GROUP = "sourceColumn";
 
-
+    /**
+     * Converts a String representing a foreign key constraint from a describe table statement into a ForeignKey object.
+     * @param line The String to convert into a ForeignKey object.
+     * @return {@link ForeignKey}
+     */
     public ForeignKey toForeignKey(String line) {
         Matcher matcher = FOREIGN_KEY_PATTERN.matcher(line);
         if (matcher.matches()) {
@@ -90,6 +99,11 @@ public class MySQLRegexParser implements DatabaseSyntaxParser {
     private static final Pattern PRIMARY_KEY_PATTERN = Pattern.compile(PRIMARY_KEY_REGEX);
     private static final String PRIMARY_KEY_GROUP = "primaryKey";
 
+    /**
+     * Converts a String representing a primary key constraint from a describe table statement into a PrimaryKey object.
+     * @param line The String to convert into a PrimaryKey object.
+     * @return {@link PrimaryKey}
+     */
     public PrimaryKey toPrimaryKey(String line) {
         Matcher matcher = PRIMARY_KEY_PATTERN.matcher(line);
         if (matcher.matches()) {

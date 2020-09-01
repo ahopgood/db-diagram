@@ -3,28 +3,28 @@ package com.alexander.diagrams.plantuml;
 import com.alexander.diagrams.model.Column;
 import com.alexander.diagrams.model.ForeignKey;
 import com.alexander.diagrams.model.Table;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class PlantUMLProducerTest {
+class PlantUmlProducerTest {
 
-    private PlantUMLProducer producer;
+    private PlantUmlProducer producer;
     private Table table;
     private ForeignKey foreignKey;
 
     @BeforeEach
     void setup() {
-        producer = new PlantUMLProducer("My Diagram", "mydiagram.png");
+        producer = new PlantUmlProducer("My Diagram", "mydiagram.png");
         table = Table.builder()
                 .name("Products")
                 .columns(Arrays.asList(
@@ -72,7 +72,7 @@ class PlantUMLProducerTest {
     @Test
     void testTableFunction() {
         String tableString = producer.tableFunction(Table.builder().name("test").build());
-        assertThat(tableString).isEqualTo("class test << (T," + PlantUMLProducer.COLOUR + ") >> {\n\n}\n");
+        assertThat(tableString).isEqualTo("class test << (T," + PlantUmlProducer.COLOUR + ") >> {\n\n}\n");
     }
 
     @Test
@@ -291,7 +291,7 @@ class PlantUMLProducerTest {
 
     @Test
     void testBuildForeignKeys_whenShowForeignKeysIsFalse() {
-        producer = new PlantUMLProducer("My Diagram", "mydiagram.png", false);
+        producer = new PlantUmlProducer("My Diagram", "mydiagram.png", false);
         table.setForeignKeys(List.of(foreignKey));
         assertThat(producer.buildForeignKeys(
             table,
