@@ -23,17 +23,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
-class MySQLDbERGeneratorTest {
+class MySQLDatabaseEntityRelationshipGeneratorTest {
 
     private static final String testPath = "src/test/resources/";
     private static String packagePath;
 
-    private DbERGenerator dbERGenerator = DbERGenerator.getMySQLGenerator("Test", "test.png");
+    private DatabaseEntityRelationshipGenerator databaseEntityRelationshipGenerator = DatabaseEntityRelationshipGenerator.getMySqlGenerator("Test", "test.png");
 
     private DatabaseSyntaxParser parser = mock(DatabaseSyntaxParser.class);
     private DiagramProducer producer = mock(DiagramProducer.class);
 
-    private DbERGenerator generator = new DbERGenerator(parser, producer);
+    private DatabaseEntityRelationshipGenerator generator = new DatabaseEntityRelationshipGenerator(parser, producer);
 
     private Optional<Table> tableOptional = Optional.of(Table.builder().build());
 
@@ -46,7 +46,7 @@ class MySQLDbERGeneratorTest {
         Path myFile = Path.of(testPath, packagePath, "mononoth", filename + ".sql");
         System.out.println(myFile);
         assertTrue(Files.exists(myFile));
-        List<String> lines = dbERGenerator.read(myFile);
+        List<String> lines = databaseEntityRelationshipGenerator.read(myFile);
         assertThat(lines.size()).isEqualTo(13);
     }
 
@@ -146,7 +146,7 @@ class MySQLDbERGeneratorTest {
 
     @BeforeAll
     static void path() {
-        packagePath = DbERGenerator.class.getPackageName()
+        packagePath = DatabaseEntityRelationshipGenerator.class.getPackageName()
                 .replace(".", File.separator);
     }
 }

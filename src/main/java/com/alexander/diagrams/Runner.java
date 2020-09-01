@@ -16,21 +16,22 @@ public class Runner {
     public static void main(String[] args) throws Exception {
 
         String testPath = "src/test/resources/";
-        String packagePath = DbERGenerator.class.getPackageName()
+        String packagePath = DatabaseEntityRelationshipGenerator.class.getPackageName()
                 .replace(".", File.separator);
 
         String system = "pim";
 
-        DbERGenerator dbERGenerator = DbERGenerator.getMySQLGenerator(system, system + ".png");
+        DatabaseEntityRelationshipGenerator databaseEntityRelationshipGenerator =
+            DatabaseEntityRelationshipGenerator.getMySqlGenerator(system, system + ".png");
 
         List<Optional<Table>> tables = new LinkedList<>();
         try (DirectoryStream<Path> dir = Files.newDirectoryStream(Path.of(testPath, packagePath, system), "*.sql")) {
             for (Path file : dir) {
-                tables.add(dbERGenerator.toTable(dbERGenerator.read(file)));
+                tables.add(databaseEntityRelationshipGenerator.toTable(databaseEntityRelationshipGenerator.read(file)));
             }
         }
         //Convert multiple tables into a single diagram
-        dbERGenerator.toDiagram(tables.stream()
+        databaseEntityRelationshipGenerator.toDiagram(tables.stream()
                 .filter(table -> table.isPresent())
                 .map(table -> table.get())
                 .collect(Collectors.toList()));

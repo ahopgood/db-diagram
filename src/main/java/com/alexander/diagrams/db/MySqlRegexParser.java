@@ -8,7 +8,7 @@ import com.alexander.diagrams.model.UniqueConstraint;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MySQLRegexParser implements DatabaseSyntaxParser {
+public class MySqlRegexParser implements DatabaseSyntaxParser {
 
     private static final String MYSQL_NAME_REGEX = "[a-zA-Z0-9\\-_]*";
 

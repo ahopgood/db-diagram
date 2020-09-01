@@ -1,7 +1,7 @@
 package com.alexander.diagrams;
 
 import com.alexander.diagrams.db.DatabaseSyntaxParser;
-import com.alexander.diagrams.db.MySQLRegexParser;
+import com.alexander.diagrams.db.MySqlRegexParser;
 import com.alexander.diagrams.model.Table;
 import com.alexander.diagrams.plantuml.DiagramProducer;
 import com.alexander.diagrams.plantuml.PlantUMLProducer;
@@ -14,16 +14,17 @@ import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
-public class DbERGenerator {
+public class DatabaseEntityRelationshipGenerator {
 
     private DatabaseSyntaxParser parser;
     private DiagramProducer producer;
 
-    public static DbERGenerator getMySQLGenerator(String diagramTitle, String outputFile) {
-        return new DbERGenerator(new MySQLRegexParser(), new PlantUMLProducer(diagramTitle, outputFile, true));
+    public static DatabaseEntityRelationshipGenerator getMySqlGenerator(String diagramTitle, String outputFile) {
+        return new DatabaseEntityRelationshipGenerator(new MySqlRegexParser(),
+            new PlantUMLProducer(diagramTitle, outputFile, true));
     }
 
-    public DbERGenerator(DatabaseSyntaxParser parser, DiagramProducer producer) {
+    public DatabaseEntityRelationshipGenerator(DatabaseSyntaxParser parser, DiagramProducer producer) {
         this.parser = parser;
         this.producer = producer;
     }

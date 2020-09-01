@@ -9,9 +9,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class MySQLRegexParserTest {
+class MySqlRegexParserTest {
 
-    private MySQLRegexParser parser = new MySQLRegexParser();
+    private MySqlRegexParser parser = new MySqlRegexParser();
 
     @Test
     void testToTable() {
