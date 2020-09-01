@@ -42,19 +42,19 @@ public class PlantUMLProducer implements DiagramProducer {
         this.showForeignKeys = showForeignKeys;
     }
 
-
     private static final String START = "@startuml";
     private static final String END = "@enduml";
     private static final String TITLE = "Title: %s";
 
     public void generateDiagram(List<Table> tables) {
-        Map<String, Table> tableMap = toMap(tables);
         StringBuilder diagramSource = new StringBuilder();
         diagramSource.append(START).append(NEWLINE);
         diagramSource.append(String.format(TITLE, title)).append(NEWLINE);
         for (Table table : tables) {
             diagramSource.append(tableFunction(table));
         }
+
+        Map<String, Table> tableMap = toMap(tables);
         diagramSource.append(
             tables.stream().map(table -> buildForeignKeys(table, tableMap))
                 .filter(string -> nonNull(string) && !string.trim().isEmpty())
