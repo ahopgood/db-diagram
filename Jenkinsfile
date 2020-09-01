@@ -21,6 +21,7 @@ pipeline {
             recordIssues enabledForFailure: true, tool: spotBugs(pattern: '**/target/spotbugsXml.xml')
             recordIssues enabledForFailure: true, tool: pmdParser(pattern: '**/target/pmd.xml')
             recordIssues enabledForFailure: true, tool: checkStyle(pattern: '**/target/checkstyle-result.xml')
+            dependencyCheckPublisher pattern: '**/target/dependency-check-report.xml'
         }
     }
 }
