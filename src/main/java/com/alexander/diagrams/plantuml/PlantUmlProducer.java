@@ -3,8 +3,7 @@ package com.alexander.diagrams.plantuml;
 import com.alexander.diagrams.model.Column;
 import com.alexander.diagrams.model.ForeignKey;
 import com.alexander.diagrams.model.Table;
-import net.sourceforge.plantuml.SourceStringReader;
-
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -15,51 +14,72 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import net.sourceforge.plantuml.SourceStringReader;
+import org.apache.commons.io.FilenameUtils;
 
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
 
-public class PlantUMLProducer implements DiagramProducer {
+@SuppressFBWarnings(value = {"WEAK_FILENAMEUTILS", "PATH_TRAVERSAL_OUT"},
+    justification = "WEAK_FILENAMEUTILS: Null byte injection is fixed in Java 7u40 and higher https://bugs.java.com/bugdatabase/view_bug.do?bug_id=8014846. "
+        + "PATH_TRAVERSAL_OUT FilenameUtils.getName() strips out the path from the filename preventing path traversal,"
+        + " the file will be written to a location relative to the running code.")
+public class PlantUmlProducer implements DiagramProducer {
 
     private final String title;
     private final String filename;
     private final boolean showForeignKeys;
 
-    public PlantUMLProducer(String title, String filename) {
+    /**
+     * Class to create a PlantUML diagram.
+     * @param title The diagram title
+     * @param filename The name of the output file, location relative to executing code
+     */
+    public PlantUmlProducer(String title, String filename) {
         this.title = title;
-        this.filename = filename;
+        this.filename = FilenameUtils.getName(filename);
         this.showForeignKeys = true;
     }
 
-    public PlantUMLProducer(String title, String filename, boolean showForeignKeys) {
+    /**
+     * Class to create a PlantUML diagram.
+     * @param title The diagram title
+     * @param filename The name of the output file, location relative to executing code
+     * @param showForeignKeys toggles whether or not to show foreign key relationships
+     */
+    public PlantUmlProducer(String title, String filename, boolean showForeignKeys) {
         this.title = title;
-        this.filename = filename;
+        this.filename = FilenameUtils.getName(filename);
         this.showForeignKeys = showForeignKeys;
     }
-
 
     private static final String START = "@startuml";
     private static final String END = "@enduml";
     private static final String TITLE = "Title: %s";
 
+    /**
+     * Creates a digaram based on the constructor args from the input table data.
+     * @param tables a List of tables
+     */
     public void generateDiagram(List<Table> tables) {
-        Map<String, Table> tableMap = toMap(tables);
-        try (OutputStream png = new FileOutputStream(Paths.get(filename).toString())) {
-            StringBuilder diagramSource = new StringBuilder();
-            diagramSource.append(START).append(NEWLINE);
-            diagramSource.append(String.format(TITLE, title)).append(NEWLINE);
-            for (Table table : tables) {
-                diagramSource.append(tableFunction(table));
-            }
-            diagramSource.append(
-                tables.stream().map(table -> buildForeignKeys(table, tableMap))
-                    .filter(string -> nonNull(string) && !string.trim().isEmpty())
-                    .collect(joining("", "", NEWLINE))
-            );
-            diagramSource.append(END).append(NEWLINE);
+        StringBuilder diagramSource = new StringBuilder();
+        diagramSource.append(START).append(NEWLINE);
+        diagramSource.append(String.format(TITLE, title)).append(NEWLINE);
+        for (Table table : tables) {
+            diagramSource.append(tableFunction(table));
+        }
 
-            System.out.println(diagramSource.toString());
-            SourceStringReader reader = new SourceStringReader(diagramSource.toString());
+        Map<String, Table> tableMap = toMap(tables);
+        diagramSource.append(
+            tables.stream().map(table -> buildForeignKeys(table, tableMap))
+                .filter(string -> nonNull(string) && !string.trim().isEmpty())
+                .collect(joining("", "", NEWLINE))
+        );
+        diagramSource.append(END).append(NEWLINE);
+
+        System.out.println(diagramSource.toString());
+        SourceStringReader reader = new SourceStringReader(diagramSource.toString());
+        try (OutputStream png = new FileOutputStream(Paths.get(FilenameUtils.getName(filename)).toString())) {
             reader.generateImage(png);
         } catch (IOException e) {
             e.printStackTrace();
@@ -112,7 +132,7 @@ public class PlantUMLProducer implements DiagramProducer {
         }
     }
 
-    String bold(String value){
+    String bold(String value) {
         return "<b>" + value + "</b>";
     }
 
@@ -140,7 +160,8 @@ public class PlantUMLProducer implements DiagramProducer {
 
     protected String buildForeignKey(ForeignKey foreignKey, Table table) {
         StringBuilder builder = new StringBuilder();
-        builder.append(table.getName() + "::" + foreignKey.getForeignKeyName() + " --> " + foreignKey.getSourceTable() + "::" + foreignKey.getSourceColumn());
+        builder.append(table.getName() + "::" + foreignKey.getForeignKeyName()
+            + " --> " + foreignKey.getSourceTable() + "::" + foreignKey.getSourceColumn());
         return builder.toString();
     }
 }

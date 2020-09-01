@@ -6,11 +6,12 @@ import com.alexander.diagrams.model.PrimaryKey;
 import com.alexander.diagrams.model.Table;
 import org.junit.jupiter.api.Test;
 
+
 import static org.assertj.core.api.Assertions.assertThat;
 
-class MySQLRegexParserTest {
+class MySqlRegexParserTest {
 
-    private MySQLRegexParser parser = new MySQLRegexParser();
+    private MySqlRegexParser parser = new MySqlRegexParser();
 
     @Test
     void testToTable() {
@@ -52,7 +53,7 @@ class MySQLRegexParserTest {
 
     @Test
     void testToColumn_defaultValueInteger() {
-        String input = "`allows_gift_message` tinyint(1) DEFAULT '0'";
+        String input = "`allows_gift_message` tinyint(1) DEFAULT '0',";
         Column column = parser.toColumn(input);
         assertThat(column).isNotNull();
         assertThat(column.getName()).isEqualTo("allows_gift_message");
@@ -75,7 +76,7 @@ class MySQLRegexParserTest {
 
     @Test
     void testToColumn_multipleAttributes() {
-        String input = "`allows_gift_message` tinyint(1) NOT NULL DEFAULT '0' AUTO_INCREMENT,";
+        String input = "`allows_gift_message` tinyint(1) NOT NULL AUTO_INCREMENT DEFAULT '0',";
         Column column = parser.toColumn(input);
         assertThat(column).isNotNull();
         assertThat(column.getName()).isEqualTo("allows_gift_message");
@@ -147,23 +148,23 @@ class MySQLRegexParserTest {
     }
 
     @Test
-    void testToColumn_decimal() {
-        String input = "  `gross_price` decimal(14,16) DEFAULT NULL,";
+    void testToColumn_maxDecimal() {
+        String input = "  `gross_price` decimal(65,30) DEFAULT NULL,";
         Column column = parser.toColumn(input);
         assertThat(column).isNotNull();
         assertThat(column.getName()).isEqualTo("gross_price");
         assertThat(column.getType()).isEqualTo("decimal");
-        assertThat(column.getScale()).isEqualTo("14,16");
+        assertThat(column.getScale()).isEqualTo("65,30");
     }
 
     @Test
-    void testToColumn_smallDecimal() {
-        String input = "  `specific_commission_rate` decimal(4,2) DEFAULT NULL,";
+    void testToColumn_minDecimal() {
+        String input = "  `specific_commission_rate` decimal(1,0) DEFAULT NULL,";
         Column column = parser.toColumn(input);
         assertThat(column).isNotNull();
         assertThat(column.getName()).isEqualTo("specific_commission_rate");
         assertThat(column.getType()).isEqualTo("decimal");
-        assertThat(column.getScale()).isEqualTo("4,2");
+        assertThat(column.getScale()).isEqualTo("1,0");
     }
 
     @Test

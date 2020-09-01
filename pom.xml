@@ -14,6 +14,7 @@
         <plantuml.version>8059</plantuml.version>
         <lombok.version>1.18.10</lombok.version>
         <jackson-databind.version>2.10.0</jackson-databind.version>
+        <commons-io.version>2.3</commons-io.version>
         <junit.version>5.5.2</junit.version>
         <assertj.version>3.13.2</assertj.version>
         <mockito.version>3.1.0</mockito.version>
@@ -22,6 +23,7 @@
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <surefire-maven-plugin.version>2.22.2</surefire-maven-plugin.version>
         <spotbugs-maven-plugin.version>4.0.4</spotbugs-maven-plugin.version>
+        <maven-checkstyle-plugin.version>3.1.1</maven-checkstyle-plugin.version>
         <pmd-plugin.version>3.12.0</pmd-plugin.version>
     </properties>
 
@@ -63,6 +65,11 @@
             <groupId>com.github.spotbugs</groupId>
             <artifactId>spotbugs-annotations</artifactId>
             <version>${spotbugs-maven-plugin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons-io.version}</version>
         </dependency>
     </dependencies>
     <build>
@@ -127,6 +134,30 @@
                     <effort>Max</effort>
                     <threshold>Low</threshold>
                     <failOnError>true</failOnError>
+                    <plugins>
+                        <plugin>
+                            <groupId>com.h3xstream.findsecbugs</groupId>
+                            <artifactId>findsecbugs-plugin</artifactId>
+                            <version>LATEST</version> <!-- Auto-update to the latest stable -->
+                        </plugin>
+                    </plugins>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${maven-checkstyle-plugin.version}</version>
+                <configuration>
+<!--                        <configLocation>google_checks.xml</configLocation>-->
+                    <configLocation>src/test/resources/alexander_checks.xml</configLocation>
+                    <violationSeverity>warning</violationSeverity>
                 </configuration>
                 <executions>
                     <execution>
@@ -142,6 +173,10 @@
                 <version>${pmd-plugin.version}</version>
                 <executions>
                     <execution>
+                        <id>verify</id>
+                        <phase>verify</phase>
+                        <!-- Binding to verify instead of validate so checkstyle fails the build after tests have run
+                        to aid with post build reporting -->
                         <goals>
                             <goal>check</goal>
                         </goals>
