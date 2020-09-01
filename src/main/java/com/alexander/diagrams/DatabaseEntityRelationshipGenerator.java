@@ -4,7 +4,6 @@ import com.alexander.diagrams.db.DatabaseSyntaxParser;
 import com.alexander.diagrams.db.MySqlRegexParser;
 import com.alexander.diagrams.model.Table;
 import com.alexander.diagrams.plantuml.DiagramProducer;
-import com.alexander.diagrams.plantuml.PlantUMLProducer;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,7 +20,7 @@ public class DatabaseEntityRelationshipGenerator {
 
     public static DatabaseEntityRelationshipGenerator getMySqlGenerator(String diagramTitle, String outputFile) {
         return new DatabaseEntityRelationshipGenerator(new MySqlRegexParser(),
-            new PlantUMLProducer(diagramTitle, outputFile, true));
+            new com.alexander.diagrams.plantuml.PlantUmlProducer(diagramTitle, outputFile, true));
     }
 
     public DatabaseEntityRelationshipGenerator(DatabaseSyntaxParser parser, DiagramProducer producer) {

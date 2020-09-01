@@ -24,19 +24,19 @@ import static java.util.stream.Collectors.joining;
     justification = "WEAK_FILENAMEUTILS: Null byte injection is fixed in Java 7u40 and higher https://bugs.java.com/bugdatabase/view_bug.do?bug_id=8014846. "
         + "PATH_TRAVERSAL_OUT FilenameUtils.getName() strips out the path from the filename preventing path traversal,"
         + " the file will be written to a location relative to the running code.")
-public class PlantUMLProducer implements DiagramProducer {
+public class PlantUmlProducer implements DiagramProducer {
 
     private final String title;
     private final String filename;
     private final boolean showForeignKeys;
 
-    public PlantUMLProducer(String title, String filename) {
+    public PlantUmlProducer(String title, String filename) {
         this.title = title;
         this.filename = FilenameUtils.getName(filename);
         this.showForeignKeys = true;
     }
 
-    public PlantUMLProducer(String title, String filename, boolean showForeignKeys) {
+    public PlantUmlProducer(String title, String filename, boolean showForeignKeys) {
         this.title = title;
         this.filename = FilenameUtils.getName(filename);
         this.showForeignKeys = showForeignKeys;
