@@ -25,8 +25,9 @@ public class MySQLRegexParser implements DatabaseSyntaxParser {
         }
         return Table.builder().name(tableName).build();
     }
-//    private static final String ATTRIBUTES_REGEX =
-//      "((?<notnull> NOT NULL)?(?<autoincrement> AUTO_INCREMENT)?( DEFAULT (?<default>NULL|'[0-9]')?))";
+    //    private static final String ATTRIBUTES_REGEX =
+    //      "((?<notnull> NOT NULL)?(?<autoincrement> AUTO_INCREMENT)?( DEFAULT (?<default>NULL|'[0-9]')?))";
+
     private static final String ATTRIBUTES_REGEX =
         "((?<notnull> NOT NULL)?(?<autoincrement> AUTO_INCREMENT)?( DEFAULT (?<default>NULL|'[0-9]'))?)";
     private static final String AUTO_INCREMENT_GROUP = "autoincrement";

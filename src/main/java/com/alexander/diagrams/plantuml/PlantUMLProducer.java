@@ -17,11 +17,10 @@ import java.util.stream.Collectors;
 import net.sourceforge.plantuml.SourceStringReader;
 import org.apache.commons.io.FilenameUtils;
 
-
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
 
-@SuppressFBWarnings(value = {"WEAK_FILENAMEUTILS", "PATH_TRAVERSAL_OUT"} ,
+@SuppressFBWarnings(value = {"WEAK_FILENAMEUTILS", "PATH_TRAVERSAL_OUT"},
     justification = "WEAK_FILENAMEUTILS: Null byte injection is fixed in Java 7u40 and higher https://bugs.java.com/bugdatabase/view_bug.do?bug_id=8014846. "
         + "PATH_TRAVERSAL_OUT FilenameUtils.getName() strips out the path from the filename preventing path traversal,"
         + " the file will be written to a location relative to the running code.")
