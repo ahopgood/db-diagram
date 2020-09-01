@@ -67,10 +67,10 @@ public class MySQLRegexParser implements DatabaseSyntaxParser {
         return null;
     }
 
-    private static final String FOREIGN_KEY_REGEX  = "\\s*CONSTRAINT `" + MYSQL_NAME_REGEX +
-        "` FOREIGN KEY \\(`(?<foreignKeyName>" + MYSQL_NAME_REGEX + ")`\\) " +
-        "REFERENCES " +
-        "`(?<sourceTable>" + MYSQL_NAME_REGEX + ")` \\(`(?<sourceColumn>" + MYSQL_NAME_REGEX + ")`\\).*";
+    private static final String FOREIGN_KEY_REGEX  = "\\s*CONSTRAINT `" + MYSQL_NAME_REGEX
+        + "` FOREIGN KEY \\(`(?<foreignKeyName>" + MYSQL_NAME_REGEX + ")`\\) "
+        + "REFERENCES "
+        + "`(?<sourceTable>" + MYSQL_NAME_REGEX + ")` \\(`(?<sourceColumn>" + MYSQL_NAME_REGEX + ")`\\).*";
     private static final Pattern FOREIGN_KEY_PATTERN = Pattern.compile(FOREIGN_KEY_REGEX);
 
     private static final String FOREIGN_KEY_NAME_GROUP = "foreignKeyName";
