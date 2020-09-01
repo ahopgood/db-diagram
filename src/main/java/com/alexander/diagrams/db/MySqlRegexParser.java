@@ -119,7 +119,7 @@ public class MySqlRegexParser implements DatabaseSyntaxParser {
     private static final String UNIQUE_CONSTRAINT_GROUP = "uniqueConstraint";
 
     /**
-     * Convert a string representing a describe table unique constraint into an object
+     * Convert a string representing a describe table unique constraint into an object.
      * @param line The line to parse
      * @return {@link UniqueConstraint}
      */
