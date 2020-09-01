@@ -116,10 +116,19 @@ public class MySqlRegexParser implements DatabaseSyntaxParser {
 
     private static final String UNIQUE_CONSTRAINT_REGEX = "";
     private static final Pattern UNIQUE_CONSTRAINT_PATTERN = Pattern.compile(UNIQUE_CONSTRAINT_REGEX);
-    private static final String UNIQUE_CONSTRAINT_GROUP = "";
+    private static final String UNIQUE_CONSTRAINT_GROUP = "uniqueConstraint";
 
+    /**
+     * Convert a string representing a describe table unique constraint into an object.
+     * @param line The line to parse
+     * @return {@link UniqueConstraint}
+     */
     public UniqueConstraint toUniqueConstraint(String line) {
-
+        Matcher matcher = UNIQUE_CONSTRAINT_PATTERN.matcher(line);
+        if (matcher.matches()) {
+            return UniqueConstraint.builder()
+                .indexName(matcher.group(UNIQUE_CONSTRAINT_GROUP)).build();
+        }
         return null;
     }
 }
