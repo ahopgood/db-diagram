@@ -27,7 +27,7 @@ pipeline {
                 alwaysLinkToLastBuild: false,
                 keepAll: true,
                 reportDir: 'target/site/',
-                reportFiles: 'dependency-updates-report.html','property-updates-report.html','plugin-updates-report.html',
+                reportFiles: 'dependency-updates-report.html,property-updates-report.html,plugin-updates-report.html',
                 reportName: "Versions Report"
             ])
         }
