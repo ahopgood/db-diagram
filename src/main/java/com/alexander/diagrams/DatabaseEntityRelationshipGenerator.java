@@ -18,12 +18,27 @@ public class DatabaseEntityRelationshipGenerator {
     private final DiagramProducer producer;
     private final Source source;
 
-    public static DatabaseEntityRelationshipGenerator getMySqlGenerator(String diagramTitle, String outputFile, Source source) {
+    /**
+     * Helper method for wiring up a MySqlRegexParser and PlantUmlProducer with an input Source.
+     * @param diagramTitle the title to put at the top of the diagram (plant uml specific field)
+     * @param outputFile The file to write the diagram to
+     * @param source The {@link Source} to use as input data for the diagram
+     * @return a DatabaseEntityRelationshipGenerator wired up with a {@MySqlRegexParser} and a {@link PlantUmlProducer}
+     */
+    public static DatabaseEntityRelationshipGenerator getMySqlGenerator(String diagramTitle,
+                                                                        String outputFile,
+                                                                        Source source) {
         return new DatabaseEntityRelationshipGenerator(new MySqlRegexParser(),
             new PlantUmlProducer(diagramTitle, outputFile, true),
             source);
     }
 
+    /**
+     * Class responsible for converting database describe statements into objects and then into diagrams.
+     * @param parser The {@link DatabaseSyntaxParser} to parse the database information from the Source
+     * @param producer The {@link DiagramProducer} to convert the parsed database objects into a diagram
+     * @param source The {@link Source} of database information
+     */
     public DatabaseEntityRelationshipGenerator(DatabaseSyntaxParser parser,
                                                DiagramProducer producer,
                                                Source source) {
