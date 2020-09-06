@@ -224,14 +224,8 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
                 <version>${versions-maven-plugin.version}</version>
-                <configuration>
-                    <formats>xml</formats>
-                </configuration>
                 <executions>
                     <execution>
-                        <configuration>
-                            <formats>xml</formats>
-                        </configuration>
                         <phase>compile</phase>
                         <goals>
                             <goal>property-updates-report</goal>
