@@ -4,9 +4,8 @@ import com.alexander.diagrams.db.DatabaseSyntaxParser;
 import com.alexander.diagrams.db.MySqlRegexParser;
 import com.alexander.diagrams.model.Table;
 import com.alexander.diagrams.plantuml.DiagramProducer;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import com.alexander.diagrams.plantuml.PlantUmlProducer;
+import com.alexander.diagrams.source.Source;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -15,22 +14,22 @@ import static java.util.stream.Collectors.toList;
 
 public class DatabaseEntityRelationshipGenerator {
 
-    private DatabaseSyntaxParser parser;
-    private DiagramProducer producer;
+    private final DatabaseSyntaxParser parser;
+    private final DiagramProducer producer;
+    private final Source source;
 
-    public static DatabaseEntityRelationshipGenerator getMySqlGenerator(String diagramTitle, String outputFile) {
+    public static DatabaseEntityRelationshipGenerator getMySqlGenerator(String diagramTitle, String outputFile, Source source) {
         return new DatabaseEntityRelationshipGenerator(new MySqlRegexParser(),
-            new com.alexander.diagrams.plantuml.PlantUmlProducer(diagramTitle, outputFile, true));
+            new PlantUmlProducer(diagramTitle, outputFile, true),
+            source);
     }
 
-    public DatabaseEntityRelationshipGenerator(DatabaseSyntaxParser parser, DiagramProducer producer) {
+    public DatabaseEntityRelationshipGenerator(DatabaseSyntaxParser parser,
+                                               DiagramProducer producer,
+                                               Source source) {
         this.parser = parser;
         this.producer = producer;
-    }
-
-    public List<String> read(Path file) throws IOException {
-        List<String> lines  = Files.readAllLines(file);
-        return lines;
+        this.source = source;
     }
 
     /**
@@ -39,9 +38,11 @@ public class DatabaseEntityRelationshipGenerator {
      * @return {@link Table}
      */
     public Optional<Table> toTable(List<String> lines) {
-        Optional<Table> table = lines.subList(0, 1)
+        Optional<Table> table = lines
                 .stream()
+                .limit(1)
                 .map(s -> parser.toTable(s))
+                .filter(Objects::nonNull)
                 .findFirst();
         table = addColumns(lines, table);
         table = addForeignKey(lines, table);
