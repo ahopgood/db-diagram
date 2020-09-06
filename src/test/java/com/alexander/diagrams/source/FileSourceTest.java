@@ -53,7 +53,7 @@ class FileSourceTest {
     }
 
     @Test
-    void testGetContents_givenDirectoryAndNoFilename_thenWilcard() {
+    void testGetContents_givenDirectoryAndNoFilename_thenWildcard() {
         FileSource source = FileSource.builder()
             .directoryPath(Path.of(testPath, packagePath, system).toString())
             .build();
@@ -65,7 +65,7 @@ class FileSourceTest {
     void testGetContents_givenFile() {
         FileSource source = FileSource.builder()
             .directoryPath(Path.of(testPath, packagePath, system).toString())
-            .fileName("Inventory.sql")
+            .fileName("inventory.sql")
             .build();
         assertTrue(source.hasNext());
         assertSourceSize(1, source);
