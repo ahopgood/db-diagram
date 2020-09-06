@@ -6,6 +6,7 @@ import com.alexander.diagrams.model.Table;
 import com.alexander.diagrams.plantuml.DiagramProducer;
 import com.alexander.diagrams.plantuml.PlantUmlProducer;
 import com.alexander.diagrams.source.Source;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -50,10 +51,15 @@ public class DatabaseEntityRelationshipGenerator {
     /**
      * Generate a diagram using the provided {@link Source}.
      */
-    public void generate() {
+    public void generate() throws Exception {
+        List<Optional<Table>> tables = new LinkedList<>();
         while (source.hasNext()) {
-            source.next();
+            tables.add(toTable(source.next()));
         }
+        toDiagram(tables.stream()
+            .filter(table -> table.isPresent())
+            .map(table -> table.get())
+            .collect(toList()));
     }
 
     /**

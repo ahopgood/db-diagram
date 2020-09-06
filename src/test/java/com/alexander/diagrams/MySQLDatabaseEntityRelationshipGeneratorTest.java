@@ -40,11 +40,11 @@ class MySQLDatabaseEntityRelationshipGeneratorTest {
 
 
     @Test
-    void testGenerate() {
+    void testGenerate() throws Exception {
         when(source.hasNext()).thenReturn(true, false);
         when(source.next()).thenReturn(List.of());
 
-        generator.generate();
+        assertThrows(RuntimeException.class, () -> generator.generate());
         verify(source, times(2)).hasNext();
         verify(source, times(1)).next();
     }
