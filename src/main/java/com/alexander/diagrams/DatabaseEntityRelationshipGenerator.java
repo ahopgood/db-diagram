@@ -95,6 +95,12 @@ public class DatabaseEntityRelationshipGenerator {
     }
 
     public void toDiagram(List<Table> tables) throws Exception {
-        producer.generateDiagram(tables);
+        Optional.ofNullable(tables)
+            .orElseThrow(() -> new RuntimeException("Unable to convert null Table list to a diagram"));
+        if (tables.size() > 0) {
+            producer.generateDiagram(tables);
+        } else {
+            throw new RuntimeException("Unable to convert empty Table list to a diagram");
+        }
     }
 }

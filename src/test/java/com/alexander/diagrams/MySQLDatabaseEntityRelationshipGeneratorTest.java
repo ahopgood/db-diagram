@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
@@ -143,14 +144,14 @@ class MySQLDatabaseEntityRelationshipGeneratorTest {
 
     @Test
     void testToDiagram_givenNullList() throws Exception {
-        generator.toDiagram(null);
-        verify(producer, times(1)).generateDiagram(anyList());
+        assertThrows(RuntimeException.class, () -> generator.toDiagram(null));
+        verify(producer, times(0)).generateDiagram(null);
     }
 
     @Test
     void testToDiagram_givenEmptyList() throws Exception {
-        generator.toDiagram(List.of());
-        verify(producer, times(1)).generateDiagram(anyList());
+        assertThrows(RuntimeException.class, () -> generator.toDiagram(List.of()));
+        verify(producer, times(0)).generateDiagram(anyList());
     }
 
     @Test
