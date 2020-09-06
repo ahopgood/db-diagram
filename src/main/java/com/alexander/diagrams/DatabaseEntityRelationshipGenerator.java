@@ -48,6 +48,15 @@ public class DatabaseEntityRelationshipGenerator {
     }
 
     /**
+     * Generate a diagram using the provided {@link Source}.
+     */
+    public void generate() {
+        while (source.hasNext()) {
+            source.next();
+        }
+    }
+
+    /**
      * Convert a line of lines representing a database create statement into a Table object.
       * @param lines The List of Strings to convert to a table.
      * @return {@link Table}

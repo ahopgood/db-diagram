@@ -38,21 +38,32 @@ class MySQLDatabaseEntityRelationshipGeneratorTest {
     private static final String KEY1 = "key1";
     private static final String KEY2 = "key2";
 
+
     @Test
-    public void testToTable_givenEmptyList() {
+    void testGenerate() {
+        when(source.hasNext()).thenReturn(true, false);
+        when(source.next()).thenReturn(List.of());
+
+        generator.generate();
+        verify(source, times(2)).hasNext();
+        verify(source, times(1)).next();
+    }
+
+    @Test
+    void testToTable_givenEmptyList() {
         Optional<Table> table = generator.toTable(List.of());
         assertThat(table.isEmpty()).isTrue();
     }
 
     @Test
-    public void testToTable_givenNullTableGenerated() {
+    void testToTable_givenNullTableGenerated() {
         when(parser.toTable(isA(String.class))).thenReturn(null);
         Optional<Table> table = generator.toTable(List.of("CREATE TABLE `test_table` ("));
         assertThat(table.isEmpty()).isTrue();
     }
 
     @Test
-    public void testToTable_givenOnlyHeader() {
+    void testToTable_givenOnlyHeader() {
         when(parser.toTable(isA(String.class))).thenReturn(Table.builder().name("test_table").build());
         Optional<Table> table = generator.toTable(List.of("CREATE TABLE `test_table` ("));
         assertThat(table.isPresent()).isTrue();
