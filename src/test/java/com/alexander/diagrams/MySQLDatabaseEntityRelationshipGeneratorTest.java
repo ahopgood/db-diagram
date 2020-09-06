@@ -142,9 +142,21 @@ class MySQLDatabaseEntityRelationshipGeneratorTest {
     }
 
     @Test
-    @Disabled
-    void testToDiagram() {
-        fail("Not yet implemented");
+    void testToDiagram_givenNullList() throws Exception {
+        generator.toDiagram(null);
+        verify(producer, times(1)).generateDiagram(anyList());
+    }
+
+    @Test
+    void testToDiagram_givenEmptyList() throws Exception {
+        generator.toDiagram(List.of());
+        verify(producer, times(1)).generateDiagram(anyList());
+    }
+
+    @Test
+    void testToDiagram_givenList() throws Exception {
+        generator.toDiagram(List.of(Table.builder().name("Test").build()));
+        verify(producer, times(1)).generateDiagram(anyList());
     }
 
     @BeforeAll

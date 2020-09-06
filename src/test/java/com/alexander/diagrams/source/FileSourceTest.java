@@ -11,7 +11,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class FileSourceTest {
 
-    String testPath = "src/test/resources/";
+    String testPath = String.format("src%stest%sresources%s",
+        File.separator, File.separator, File.separator);
     String packagePath = DatabaseEntityRelationshipGenerator.class.getPackageName()
         .replace(".", File.separator);
     String system = "pim";
