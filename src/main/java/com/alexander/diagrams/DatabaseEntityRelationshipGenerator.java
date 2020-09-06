@@ -94,6 +94,11 @@ public class DatabaseEntityRelationshipGenerator {
         return table;
     }
 
+    /**
+     * Converts a parsed list of tables into a diagram using the provided {@link DiagramProducer}.
+     * @param tables a list of {@link Table}s to convert into a diagram
+     * @throws Exception catch-all Exception handling
+     */
     public void toDiagram(List<Table> tables) throws Exception {
         Optional.ofNullable(tables)
             .orElseThrow(() -> new RuntimeException("Unable to convert null Table list to a diagram"));
