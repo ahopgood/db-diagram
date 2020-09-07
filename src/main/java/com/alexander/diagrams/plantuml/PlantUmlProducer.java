@@ -58,7 +58,7 @@ public class PlantUmlProducer implements DiagramProducer {
     private static final String TITLE = "Title: %s";
 
     /**
-     * Creates a digaram based on the constructor args from the input table data.
+     * Creates a diagram based on the constructor args from the input table data.
      * @param tables a List of tables
      */
     public void generateDiagram(List<Table> tables) {

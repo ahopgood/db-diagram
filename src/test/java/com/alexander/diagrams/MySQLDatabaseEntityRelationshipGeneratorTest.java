@@ -6,10 +6,8 @@ import com.alexander.diagrams.model.ForeignKey;
 import com.alexander.diagrams.model.PrimaryKey;
 import com.alexander.diagrams.model.Table;
 import com.alexander.diagrams.plantuml.DiagramProducer;
+import com.alexander.diagrams.source.Source;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +17,7 @@ import org.junit.jupiter.api.Test;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
@@ -28,33 +26,50 @@ class MySQLDatabaseEntityRelationshipGeneratorTest {
     private static final String testPath = "src/test/resources/";
     private static String packagePath;
 
-    private DatabaseEntityRelationshipGenerator databaseEntityRelationshipGenerator = DatabaseEntityRelationshipGenerator.getMySqlGenerator("Test", "test.png");
-
     private DatabaseSyntaxParser parser = mock(DatabaseSyntaxParser.class);
     private DiagramProducer producer = mock(DiagramProducer.class);
+    private Source source = mock(Source.class);
 
-    private DatabaseEntityRelationshipGenerator generator = new DatabaseEntityRelationshipGenerator(parser, producer);
+    private DatabaseEntityRelationshipGenerator generator
+        = new DatabaseEntityRelationshipGenerator(parser, producer, source);
 
     private Optional<Table> tableOptional = Optional.of(Table.builder().build());
 
     private static final String KEY1 = "key1";
     private static final String KEY2 = "key2";
 
+
     @Test
-    void testRead() throws IOException {
-        String filename = "attribute_values";
-        Path myFile = Path.of(testPath, packagePath, "mononoth", filename + ".sql");
-        System.out.println(myFile);
-        assertTrue(Files.exists(myFile));
-        List<String> lines = databaseEntityRelationshipGenerator.read(myFile);
-        assertThat(lines.size()).isEqualTo(13);
+    void testGenerate() throws Exception {
+        when(source.hasNext()).thenReturn(true, false);
+        when(source.next()).thenReturn(List.of());
+
+        assertThrows(RuntimeException.class, () -> generator.generate());
+        verify(source, times(2)).hasNext();
+        verify(source, times(1)).next();
     }
 
     @Test
-    @Disabled
-    public void testToTable() {
-        fail("Not yet implemented");
+    void testToTable_givenEmptyList() {
+        Optional<Table> table = generator.toTable(List.of());
+        assertThat(table.isEmpty()).isTrue();
     }
+
+    @Test
+    void testToTable_givenNullTableGenerated() {
+        when(parser.toTable(isA(String.class))).thenReturn(null);
+        Optional<Table> table = generator.toTable(List.of("CREATE TABLE `test_table` ("));
+        assertThat(table.isEmpty()).isTrue();
+    }
+
+    @Test
+    void testToTable_givenOnlyHeader() {
+        when(parser.toTable(isA(String.class))).thenReturn(Table.builder().name("test_table").build());
+        Optional<Table> table = generator.toTable(List.of("CREATE TABLE `test_table` ("));
+        assertThat(table.isPresent()).isTrue();
+        assertThat(table.get().getName()).isEqualTo("test_table");
+    }
+
 
     @Test
     void testAddColumns() {
@@ -139,9 +154,21 @@ class MySQLDatabaseEntityRelationshipGeneratorTest {
     }
 
     @Test
-    @Disabled
-    void testToDiagram() {
-        fail("Not yet implemented");
+    void testToDiagram_givenNullList() throws Exception {
+        assertThrows(RuntimeException.class, () -> generator.toDiagram(null));
+        verify(producer, times(0)).generateDiagram(null);
+    }
+
+    @Test
+    void testToDiagram_givenEmptyList() throws Exception {
+        assertThrows(RuntimeException.class, () -> generator.toDiagram(List.of()));
+        verify(producer, times(0)).generateDiagram(anyList());
+    }
+
+    @Test
+    void testToDiagram_givenList() throws Exception {
+        generator.toDiagram(List.of(Table.builder().name("Test").build()));
+        verify(producer, times(1)).generateDiagram(anyList());
     }
 
     @BeforeAll
