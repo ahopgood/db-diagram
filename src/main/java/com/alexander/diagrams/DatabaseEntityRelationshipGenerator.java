@@ -4,9 +4,9 @@ import com.alexander.diagrams.db.DatabaseSyntaxParser;
 import com.alexander.diagrams.db.MySqlRegexParser;
 import com.alexander.diagrams.model.Table;
 import com.alexander.diagrams.plantuml.DiagramProducer;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import com.alexander.diagrams.plantuml.PlantUmlProducer;
+import com.alexander.diagrams.source.Source;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -15,22 +15,51 @@ import static java.util.stream.Collectors.toList;
 
 public class DatabaseEntityRelationshipGenerator {
 
-    private DatabaseSyntaxParser parser;
-    private DiagramProducer producer;
+    private final DatabaseSyntaxParser parser;
+    private final DiagramProducer producer;
+    private final Source source;
 
-    public static DatabaseEntityRelationshipGenerator getMySqlGenerator(String diagramTitle, String outputFile) {
+    /**
+     * Helper method for wiring up a MySqlRegexParser and PlantUmlProducer with an input Source.
+     * @param diagramTitle the title to put at the top of the diagram (plant uml specific field)
+     * @param outputFile The file to write the diagram to
+     * @param source The {@link Source} to use as input data for the diagram
+     * @return a DatabaseEntityRelationshipGenerator wired up with a {@MySqlRegexParser} and a {@link PlantUmlProducer}
+     */
+    public static DatabaseEntityRelationshipGenerator getMySqlGenerator(String diagramTitle,
+                                                                        String outputFile,
+                                                                        Source source) {
         return new DatabaseEntityRelationshipGenerator(new MySqlRegexParser(),
-            new com.alexander.diagrams.plantuml.PlantUmlProducer(diagramTitle, outputFile, true));
+            new PlantUmlProducer(diagramTitle, outputFile, true),
+            source);
     }
 
-    public DatabaseEntityRelationshipGenerator(DatabaseSyntaxParser parser, DiagramProducer producer) {
+    /**
+     * Class responsible for converting database describe statements into objects and then into diagrams.
+     * @param parser The {@link DatabaseSyntaxParser} to parse the database information from the Source
+     * @param producer The {@link DiagramProducer} to convert the parsed database objects into a diagram
+     * @param source The {@link Source} of database information
+     */
+    public DatabaseEntityRelationshipGenerator(DatabaseSyntaxParser parser,
+                                               DiagramProducer producer,
+                                               Source source) {
         this.parser = parser;
         this.producer = producer;
+        this.source = source;
     }
 
-    public List<String> read(Path file) throws IOException {
-        List<String> lines  = Files.readAllLines(file);
-        return lines;
+    /**
+     * Generate a diagram using the provided {@link Source}.
+     */
+    public void generate() throws Exception {
+        List<Optional<Table>> tables = new LinkedList<>();
+        while (source.hasNext()) {
+            tables.add(toTable(source.next()));
+        }
+        toDiagram(tables.stream()
+            .filter(table -> table.isPresent())
+            .map(table -> table.get())
+            .collect(toList()));
     }
 
     /**
@@ -39,9 +68,11 @@ public class DatabaseEntityRelationshipGenerator {
      * @return {@link Table}
      */
     public Optional<Table> toTable(List<String> lines) {
-        Optional<Table> table = lines.subList(0, 1)
+        Optional<Table> table = lines
                 .stream()
+                .limit(1)
                 .map(s -> parser.toTable(s))
+                .filter(Objects::nonNull)
                 .findFirst();
         table = addColumns(lines, table);
         table = addForeignKey(lines, table);
@@ -78,7 +109,18 @@ public class DatabaseEntityRelationshipGenerator {
         return table;
     }
 
+    /**
+     * Converts a parsed list of tables into a diagram using the provided {@link DiagramProducer}.
+     * @param tables a list of {@link Table}s to convert into a diagram
+     * @throws Exception catch-all Exception handling
+     */
     public void toDiagram(List<Table> tables) throws Exception {
-        producer.generateDiagram(tables);
+        Optional.ofNullable(tables)
+            .orElseThrow(() -> new RuntimeException("Unable to convert null Table list to a diagram"));
+        if (tables.size() > 0) {
+            producer.generateDiagram(tables);
+        } else {
+            throw new RuntimeException("Unable to convert empty Table list to a diagram");
+        }
     }
 }
