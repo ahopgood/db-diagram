@@ -25,14 +25,14 @@ generator.generate();
 
 ## To do
 * Standardise input sources:
-    * FileSource 
-    * ~~DbSource~~
+    * ~~FileSource~~ 
+    * DbSource
 * Refactor to separate out concerns correctly:
-    * Runner class has functionality in it that should be encapsulated in a Source
-    * DatabaseEntityRelationshipGenerator should be responsible for using a source to obtain a List of Strings describing on a table by table basis.
+    * ~~Runner class has functionality in it that should be encapsulated in a Source~~
+    * ~~DatabaseEntityRelationshipGenerator should be responsible for using a source to obtain a List of Strings describing on a table by table basis.~~
     * DatabaseEntityRelationshipGenerator should use the list of Strings to call the parser to create a table
 * Add graphviz check to PlantUmlProducer
-* Check tables exist in diagram *before* adding the foreign key dependency in order to reduce vestigial arrows to empty class objects
+* ~~Check tables exist in diagram *before* adding the foreign key dependency in order to reduce vestigial arrows to empty class objects~~ toggleable now
 * Add primary key to field declaration or in the field block of the class diagram 
 * Add foreign key to field declaration or in the field block of the class diagram
 * Add default value to field declaration

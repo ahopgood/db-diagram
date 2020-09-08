@@ -8,18 +8,16 @@ import com.alexander.diagrams.source.FileSource;
 import com.alexander.diagrams.source.Source;
 import java.io.File;
 import java.nio.file.Path;
+import org.junit.jupiter.api.Test;
 
-public class Runner {
-    /**
-     * A main (temporary) entry point for integration testing.
-     * @param args not used
-     * @throws Exception any Runtime Exception
-     */
-    public static void main(String[] args) throws Exception {
+public class GeneratorIT {
+
+    @Test
+    void mainIntTest() throws Exception {
 
         String testPath = "src/test/resources/";
         String packagePath = DatabaseEntityRelationshipGenerator.class.getPackageName()
-                .replace(".", File.separator);
+            .replace(".", File.separator);
 
         String system = "pim";
 
@@ -43,4 +41,7 @@ public class Runner {
 
         generator.generate();
     }
+
+
+
 }

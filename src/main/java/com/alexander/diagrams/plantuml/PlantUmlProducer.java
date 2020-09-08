@@ -40,7 +40,7 @@ public class PlantUmlProducer implements DiagramProducer {
     public PlantUmlProducer(String title, String filename) {
         this.title = title;
         this.filename = FilenameUtils.getName(filename);
-        this.showOrphanForeignKeys = true;
+        this.showOrphanForeignKeys = false;
     }
 
     /**
