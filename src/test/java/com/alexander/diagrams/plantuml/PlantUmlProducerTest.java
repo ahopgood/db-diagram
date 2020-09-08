@@ -281,7 +281,6 @@ class PlantUmlProducerTest {
 
     @Test
     void testBuildForeignKeys_whenShowOrphanForeignKeysIsFalse_andSourceTablePresentInMap() {
-        producer = new PlantUmlProducer("My Diagram", "mydiagram.png", false);
         table.setForeignKeys(List.of(foreignKey));
         assertThat(producer.buildForeignKeys(
             table,
@@ -291,6 +290,7 @@ class PlantUmlProducerTest {
 
     @Test
     void testBuildForeignKeys_whenShowOrphanForeignKeysIsTrue_andSourceTablePresentInMap() {
+        producer = new PlantUmlProducer("My Diagram", "mydiagram.png", true);
         table.setForeignKeys(List.of(foreignKey));
         assertThat(producer.buildForeignKeys(
             table,
@@ -300,6 +300,7 @@ class PlantUmlProducerTest {
 
     @Test
     void testBuildForeignKeys_whenShowOrphanForeignKeysIsTrue_andSourceTableIsMissingInMap() {
+        producer = new PlantUmlProducer("My Diagram", "mydiagram.png", true);
         table.setForeignKeys(List.of(foreignKey));
         assertThat(producer.buildForeignKeys(
             table,
@@ -309,7 +310,6 @@ class PlantUmlProducerTest {
 
     @Test
     void testBuildForeignKeys_whenShowOrphanForeignKeysIsFalse_andSourceTableMissingInMap() {
-        producer = new PlantUmlProducer("My Diagram", "mydiagram.png", false);
         table.setForeignKeys(List.of(foreignKey));
         assertThat(producer.buildForeignKeys(
             table,
