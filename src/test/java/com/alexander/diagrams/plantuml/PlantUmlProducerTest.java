@@ -45,7 +45,7 @@ class PlantUmlProducerTest {
     }
 
     @Test
-    void testGenerateDiagram_withForreignKey() throws IOException {
+    void testGenerateDiagram_withForeignKey() throws IOException {
         Table foreignTable = Table.builder()
             .name("Products")
             .columns(Arrays.asList(
@@ -280,24 +280,43 @@ class PlantUmlProducerTest {
     }
 
     @Test
-    void testBuildForeignKeys_whenForeignKeySourceTableIsNotInMap() {
-        assertThat(producer.buildForeignKeys(
-            Table.builder()
-                .foreignKeys(List.of(foreignKey))
-                .build(),
-            Map.of()))
-        .isEqualTo("\n");
-    }
-
-    @Test
-    void testBuildForeignKeys_whenShowForeignKeysIsFalse() {
+    void testBuildForeignKeys_whenShowOrphanForeignKeysIsFalse_andSourceTablePresentInMap() {
         producer = new PlantUmlProducer("My Diagram", "mydiagram.png", false);
         table.setForeignKeys(List.of(foreignKey));
         assertThat(producer.buildForeignKeys(
             table,
             Map.of(foreignKey.getSourceTable(), table)))
+            .isEqualTo("Products::Id --> People::Name\n");
+    }
+
+    @Test
+    void testBuildForeignKeys_whenShowOrphanForeignKeysIsTrue_andSourceTablePresentInMap() {
+        table.setForeignKeys(List.of(foreignKey));
+        assertThat(producer.buildForeignKeys(
+            table,
+            Map.of(foreignKey.getSourceTable(), table)))
+            .isEqualTo("Products::Id --> People::Name\n");
+    }
+
+    @Test
+    void testBuildForeignKeys_whenShowOrphanForeignKeysIsTrue_andSourceTableIsMissingInMap() {
+        table.setForeignKeys(List.of(foreignKey));
+        assertThat(producer.buildForeignKeys(
+            table,
+            Map.of(table.getName(), table)))
+            .isEqualTo("Products::Id --> People::Name\n");
+    }
+
+    @Test
+    void testBuildForeignKeys_whenShowOrphanForeignKeysIsFalse_andSourceTableMissingInMap() {
+        producer = new PlantUmlProducer("My Diagram", "mydiagram.png", false);
+        table.setForeignKeys(List.of(foreignKey));
+        assertThat(producer.buildForeignKeys(
+            table,
+            Map.of(table.getName(), table)))
             .isEqualTo("\n");
     }
+
 
     @Test
     void testBuildForeignKeys() {

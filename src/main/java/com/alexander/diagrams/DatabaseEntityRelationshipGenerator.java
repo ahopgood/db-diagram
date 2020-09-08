@@ -1,38 +1,23 @@
 package com.alexander.diagrams;
 
 import com.alexander.diagrams.db.DatabaseSyntaxParser;
-import com.alexander.diagrams.db.MySqlRegexParser;
 import com.alexander.diagrams.model.Table;
 import com.alexander.diagrams.plantuml.DiagramProducer;
-import com.alexander.diagrams.plantuml.PlantUmlProducer;
 import com.alexander.diagrams.source.Source;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import lombok.Builder;
 
 import static java.util.stream.Collectors.toList;
 
+@Builder
 public class DatabaseEntityRelationshipGenerator {
 
     private final DatabaseSyntaxParser parser;
     private final DiagramProducer producer;
     private final Source source;
-
-    /**
-     * Helper method for wiring up a MySqlRegexParser and PlantUmlProducer with an input Source.
-     * @param diagramTitle the title to put at the top of the diagram (plant uml specific field)
-     * @param outputFile The file to write the diagram to
-     * @param source The {@link Source} to use as input data for the diagram
-     * @return a DatabaseEntityRelationshipGenerator wired up with a {@MySqlRegexParser} and a {@link PlantUmlProducer}
-     */
-    public static DatabaseEntityRelationshipGenerator getMySqlGenerator(String diagramTitle,
-                                                                        String outputFile,
-                                                                        Source source) {
-        return new DatabaseEntityRelationshipGenerator(new MySqlRegexParser(),
-            new PlantUmlProducer(diagramTitle, outputFile, true),
-            source);
-    }
 
     /**
      * Class responsible for converting database describe statements into objects and then into diagrams.
@@ -67,7 +52,7 @@ public class DatabaseEntityRelationshipGenerator {
       * @param lines The List of Strings to convert to a table.
      * @return {@link Table}
      */
-    public Optional<Table> toTable(List<String> lines) {
+    Optional<Table> toTable(List<String> lines) {
         Optional<Table> table = lines
                 .stream()
                 .limit(1)
@@ -114,7 +99,7 @@ public class DatabaseEntityRelationshipGenerator {
      * @param tables a list of {@link Table}s to convert into a diagram
      * @throws Exception catch-all Exception handling
      */
-    public void toDiagram(List<Table> tables) throws Exception {
+    void toDiagram(List<Table> tables) throws Exception {
         Optional.ofNullable(tables)
             .orElseThrow(() -> new RuntimeException("Unable to convert null Table list to a diagram"));
         if (tables.size() > 0) {

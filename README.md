@@ -1,9 +1,32 @@
 # README
 
-To do:
+## Usage
+```
+Source source = FileSource.builder()
+    .directoryPath(Path.of(testPath, packagePath, system).toString())
+    .build();
+
+DiagramProducer producer = PlantUmlProducer.builder()
+    .filename(system + ".png")
+    .title(system)
+    .showOrphanForeignKeys(true)
+    .build();
+
+DatabaseSyntaxParser parser = new MySqlRegexParser();
+
+DatabaseEntityRelationshipGenerator generator = DatabaseEntityRelationshipGenerator.builder()
+    .parser(parser)
+    .producer(producer)
+    .source(source)
+    .build();
+
+generator.generate();
+```
+
+## To do
 * Standardise input sources:
     * FileSource 
-    * DbSource
+    * ~~DbSource~~
 * Refactor to separate out concerns correctly:
     * Runner class has functionality in it that should be encapsulated in a Source
     * DatabaseEntityRelationshipGenerator should be responsible for using a source to obtain a List of Strings describing on a table by table basis.

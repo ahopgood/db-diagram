@@ -1,5 +1,9 @@
 package com.alexander.diagrams;
 
+import com.alexander.diagrams.db.DatabaseSyntaxParser;
+import com.alexander.diagrams.db.MySqlRegexParser;
+import com.alexander.diagrams.plantuml.DiagramProducer;
+import com.alexander.diagrams.plantuml.PlantUmlProducer;
 import com.alexander.diagrams.source.FileSource;
 import com.alexander.diagrams.source.Source;
 import java.io.File;
@@ -23,8 +27,20 @@ public class Runner {
             .directoryPath(Path.of(testPath, packagePath, system).toString())
             .build();
 
-        DatabaseEntityRelationshipGenerator databaseEntityRelationshipGenerator =
-            DatabaseEntityRelationshipGenerator.getMySqlGenerator(system, system + ".png", source);
-        databaseEntityRelationshipGenerator.generate();
+        DiagramProducer producer = PlantUmlProducer.builder()
+            .filename(system + ".png")
+            .title(system)
+            .showOrphanForeignKeys(true)
+            .build();
+
+        DatabaseSyntaxParser parser = new MySqlRegexParser();
+
+        DatabaseEntityRelationshipGenerator generator = DatabaseEntityRelationshipGenerator.builder()
+            .parser(parser)
+            .producer(producer)
+            .source(source)
+            .build();
+
+        generator.generate();
     }
 }

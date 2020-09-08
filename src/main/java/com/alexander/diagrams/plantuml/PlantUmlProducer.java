@@ -14,12 +14,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import lombok.Builder;
 import net.sourceforge.plantuml.SourceStringReader;
 import org.apache.commons.io.FilenameUtils;
 
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
 
+@Builder
 @SuppressFBWarnings(value = {"WEAK_FILENAMEUTILS", "PATH_TRAVERSAL_OUT"},
     justification = "WEAK_FILENAMEUTILS: Null byte injection is fixed in Java 7u40 and higher https://bugs.java.com/bugdatabase/view_bug.do?bug_id=8014846. "
         + "PATH_TRAVERSAL_OUT FilenameUtils.getName() strips out the path from the filename preventing path traversal,"
@@ -28,7 +30,7 @@ public class PlantUmlProducer implements DiagramProducer {
 
     private final String title;
     private final String filename;
-    private final boolean showForeignKeys;
+    private final boolean showOrphanForeignKeys;
 
     /**
      * Class to create a PlantUML diagram.
@@ -38,19 +40,21 @@ public class PlantUmlProducer implements DiagramProducer {
     public PlantUmlProducer(String title, String filename) {
         this.title = title;
         this.filename = FilenameUtils.getName(filename);
-        this.showForeignKeys = true;
+        this.showOrphanForeignKeys = true;
     }
 
     /**
      * Class to create a PlantUML diagram.
      * @param title The diagram title
      * @param filename The name of the output file, location relative to executing code
-     * @param showForeignKeys toggles whether or not to show foreign key relationships
+     * @param showOrphanForeignKeys toggles whether or not to show foreign key relationships that don't have a table
+     *                              known to the producer, these orphan relationships will often point to an empty
+     *                              table.
      */
-    public PlantUmlProducer(String title, String filename, boolean showForeignKeys) {
+    public PlantUmlProducer(String title, String filename, boolean showOrphanForeignKeys) {
         this.title = title;
         this.filename = FilenameUtils.getName(filename);
-        this.showForeignKeys = showForeignKeys;
+        this.showOrphanForeignKeys = showOrphanForeignKeys;
     }
 
     private static final String START = "@startuml";
@@ -153,7 +157,7 @@ public class PlantUmlProducer implements DiagramProducer {
                 .orElseGet(() -> new LinkedList<>())
                 .stream()
                 .filter(foreignKey -> nonNull(foreignKey))
-                .filter(foreignKey -> nonNull(tableMap.get(foreignKey.getSourceTable())) && showForeignKeys)
+                .filter(foreignKey -> nonNull(tableMap.get(foreignKey.getSourceTable())) || showOrphanForeignKeys)
                 .map(fk -> buildForeignKey(fk, table))
                 .collect(joining(NEWLINE, "", NEWLINE));
     }

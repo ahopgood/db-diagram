@@ -12,13 +12,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
 class MySQLDatabaseEntityRelationshipGeneratorTest {
@@ -84,6 +82,7 @@ class MySQLDatabaseEntityRelationshipGeneratorTest {
         Optional<Table> table = generator.addColumns(Arrays.asList("",""), tableOptional);
         verify(parser, times(2)).toColumn("");
 
+        assertThat(table.isPresent()).isTrue();
         assertThat(table.get().getColumns().size()).isEqualTo(2);
         assertThat(table.get().getColumns().get(0).getName()).isEqualTo(KEY1);
         assertThat(table.get().getColumns().get(1).getName()).isEqualTo(KEY2);
