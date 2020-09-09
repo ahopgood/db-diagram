@@ -1,6 +1,8 @@
 package com.alexander.diagrams;
 
 import com.alexander.diagrams.db.DatabaseSyntaxParser;
+import com.alexander.diagrams.model.Column;
+import com.alexander.diagrams.model.ForeignKey;
 import com.alexander.diagrams.model.Table;
 import com.alexander.diagrams.plantuml.DiagramProducer;
 import com.alexander.diagrams.source.Source;
@@ -8,9 +10,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.Builder;
 
-import static java.util.stream.Collectors.toList;
+
+import static java.util.stream.Collectors.*;
 
 @Builder
 public class DatabaseEntityRelationshipGenerator {
@@ -75,13 +79,34 @@ public class DatabaseEntityRelationshipGenerator {
     }
 
     Optional<Table> addForeignKey(List<String> lines, Optional<Table> table) {
-        table.ifPresent(t -> t.setForeignKeys(
-                lines.stream()
-                        .map(s -> parser.toForeignKey(s))
-                        .filter(Objects::nonNull)
-                        .collect(toList())
-        ));
+        List<ForeignKey> foreignKeys = lines.stream()
+            .map(s -> parser.toForeignKey(s))
+            .filter(Objects::nonNull)
+            .collect(toList());
+
+        table.ifPresent(t -> t.setForeignKeys(foreignKeys));
+
+        //Mark columns as foreign keys
+        List<String> names = foreignKeys.stream().map(key -> key.getForeignKeyName()).collect(Collectors.toList());
+        List<Column> columns = table.orElse(Table.builder().build())
+            .getColumns().stream().map(column -> map(column, names)).collect(Collectors.toList());
+        table.ifPresent(t -> t.setColumns(columns));
         return table;
+    }
+
+    private Column map(Column column, List<String> keyNames) {
+        boolean isForeign = keyNames.contains(column.getName());
+        return Column.builder()
+            .name(column.getName())
+            .scale(column.getScale())
+            .type(column.getType())
+            .autoIncrement(column.isAutoIncrement())
+            .notDefault(column.isNotDefault())
+            .defaultValue(column.getDefaultValue())
+            .primary(column.isPrimary())
+            .notNull(column.isNotNull())
+            .foreign(isForeign)
+            .build();
     }
 
     Optional<Table> addPrimaryKey(List<String> lines, Optional<Table> table) {

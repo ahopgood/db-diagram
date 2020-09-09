@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
 class MySQLDatabaseEntityRelationshipGeneratorTest {
@@ -42,7 +43,7 @@ class MySQLDatabaseEntityRelationshipGeneratorTest {
         when(source.hasNext()).thenReturn(true, false);
         when(source.next()).thenReturn(List.of());
 
-        assertThrows(RuntimeException.class, () -> generator.generate());
+        assertThrows(RuntimeException.class, () -> generator.generate(), "Unable to convert empty Table list to a diagram");
         verify(source, times(2)).hasNext();
         verify(source, times(1)).next();
     }
@@ -100,17 +101,55 @@ class MySQLDatabaseEntityRelationshipGeneratorTest {
 
     @Test
     void testAddForeignKey() {
+        tableOptional.get().setColumns(List.of(
+            Column.builder().name(KEY1).build(),
+            Column.builder().name(KEY2).build()));
+
         when(parser.toForeignKey(""))
-                .thenReturn(ForeignKey.builder().foreignKeyName(KEY1).build())
-                .thenReturn(ForeignKey.builder().foreignKeyName(KEY2).build());
+            .thenReturn(ForeignKey.builder().foreignKeyName(KEY1).build())
+            .thenReturn(ForeignKey.builder().foreignKeyName(KEY2).build());
 
         Optional<Table> table = generator.addForeignKey(Arrays.asList("",""), tableOptional);
         verify(parser, times(2)).toForeignKey("");
 
+        assertThat(table.isPresent()).isTrue();
         assertThat(table.get().getForeignKeys().size()).isEqualTo(2);
         assertThat(table.get().getForeignKeys().get(0).getForeignKeyName()).isEqualTo(KEY1);
         assertThat(table.get().getForeignKeys().get(1).getForeignKeyName()).isEqualTo(KEY2);
+
+        long foreignKeyCount = table.get()
+            .getColumns()
+            .stream()
+            .filter(column -> column.isForeign() == true)
+            .count();
+        assertThat(foreignKeyCount).isEqualTo(2);
     }
+
+    @Test
+    void testForeignKey_whenNoMatchingColumnFound() {
+        tableOptional.get().setColumns(List.of(
+            Column.builder().name(KEY2).build()));
+
+        when(parser.toForeignKey(""))
+            .thenReturn(ForeignKey.builder().foreignKeyName(KEY1).build())
+            .thenReturn(ForeignKey.builder().foreignKeyName(KEY2).build());
+
+        Optional<Table> table = generator.addForeignKey(Arrays.asList("",""), tableOptional);
+        verify(parser, times(2)).toForeignKey("");
+
+        assertThat(table.isPresent()).isTrue();
+        assertThat(table.get().getForeignKeys().size()).isEqualTo(2);
+        assertThat(table.get().getForeignKeys().get(0).getForeignKeyName()).isEqualTo(KEY1);
+        assertThat(table.get().getForeignKeys().get(1).getForeignKeyName()).isEqualTo(KEY2);
+
+        long foreignKeyCount = table.get()
+            .getColumns()
+            .stream()
+            .filter(column -> column.isForeign() == true)
+            .count();
+        assertThat(foreignKeyCount).isEqualTo(1);
+    }
+
 
     @Test
     void testAddForeignKey_whenNoForeignKeyFound() {

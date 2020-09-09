@@ -1,5 +1,6 @@
 package com.alexander.diagrams.model;
 
+import java.util.LinkedList;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,9 +12,12 @@ public class Table {
 
     private final String name;
     @Setter
-    private List<Column> columns;
+    @Builder.Default
+    private List<Column> columns = new LinkedList<>();
     @Setter
-    private List<ForeignKey> foreignKeys;
+    @Builder.Default
+    private List<ForeignKey> foreignKeys = new LinkedList<>();
     @Setter
-    private List<PrimaryKey> primaryKeys;
+    @Builder.Default
+    private List<PrimaryKey> primaryKeys = new LinkedList<>();
 }
