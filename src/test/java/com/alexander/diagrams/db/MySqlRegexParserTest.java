@@ -197,7 +197,6 @@ class MySqlRegexParserTest {
         assertThat(primaryKey.getKeyName()).isEqualTo(List.of("id"));
     }
 
-    @Disabled
     @Test
     void testToPrimaryKey_compositeKey() {
         String input = "PRIMARY KEY (`inventory_id`,`attribute_value_id`),";
