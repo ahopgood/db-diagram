@@ -5,12 +5,13 @@ import com.alexander.diagrams.model.ForeignKey;
 import com.alexander.diagrams.model.PrimaryKey;
 import com.alexander.diagrams.model.Table;
 import com.alexander.diagrams.model.UniqueConstraint;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MySqlRegexParser implements DatabaseSyntaxParser {
 
-    private static final String MYSQL_NAME_REGEX = "[a-zA-Z0-9\\-_]*";
+    private static final String MYSQL_NAME_REGEX = "[a-zA-Z0-9\\-_]{0,64}";
 
     private static final String CREATE_TABLE_REGEX = ".*CREATE TABLE `(?<tablename>[a-zA-Z_\\-]*)` \\(";
     private static final String TABLE_NAME_GROUP = "tablename";
@@ -95,7 +96,8 @@ public class MySqlRegexParser implements DatabaseSyntaxParser {
         return null;
     }
 
-    private static final String PRIMARY_KEY_REGEX = "\\s*PRIMARY KEY \\(`(?<primaryKey>" + MYSQL_NAME_REGEX + ")`\\),";
+    private static final String PRIMARY_KEY_REGEX = "\\s*PRIMARY KEY \\((?<primaryKey>`" + MYSQL_NAME_REGEX
+        + "`(,`" + MYSQL_NAME_REGEX + "`)*)\\),";
     private static final Pattern PRIMARY_KEY_PATTERN = Pattern.compile(PRIMARY_KEY_REGEX);
     private static final String PRIMARY_KEY_GROUP = "primaryKey";
 
@@ -107,8 +109,10 @@ public class MySqlRegexParser implements DatabaseSyntaxParser {
     public PrimaryKey toPrimaryKey(String line) {
         Matcher matcher = PRIMARY_KEY_PATTERN.matcher(line);
         if (matcher.matches()) {
+            String group = matcher.group(PRIMARY_KEY_GROUP);
+            String key = group.replace("`", "");
             return PrimaryKey.builder()
-                    .keyName(matcher.group(PRIMARY_KEY_GROUP))
+                    .keyName(List.of(key.split(",")))
                     .build();
         }
         return null;

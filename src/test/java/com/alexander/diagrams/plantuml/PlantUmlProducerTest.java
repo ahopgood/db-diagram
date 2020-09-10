@@ -162,7 +162,6 @@ class PlantUmlProducerTest {
         assertThat(columnString).isEqualTo("\t{field} <b>Id</b> date <<FK>>");
     }
 
-    @Disabled
     @Test
     void testBuildColumn_withPrimaryKey() {
         String columnString = producer.buildColumn(Column.builder().name("Id").type("date").primary(true).build());
@@ -257,7 +256,6 @@ class PlantUmlProducerTest {
         assertThat(foreignKeyString).isEqualTo("Products::Id -- People::Name");
     }
 
-
     @Test
     void testBuildForeignKeys_whenTableNull() {
         assertThrows(NullPointerException.class,
@@ -329,7 +327,6 @@ class PlantUmlProducerTest {
             Map.of(table.getName(), table)))
             .isEqualTo("\n");
     }
-
 
     @Test
     void testBuildForeignKeys() {
