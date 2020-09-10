@@ -118,7 +118,7 @@ public class DatabaseEntityRelationshipGenerator {
         table.ifPresent(t -> t.setPrimaryKeys(primaryKeys));
 
         //Mark columns as primary keys
-        List<String> names = primaryKeys.stream().map(key -> key.getKeyName()).collect(toList());
+        List<String> names = primaryKeys.stream().flatMap(key -> key.getKeyName().stream()).collect(toList());
         List<Column> columns = table.orElse(Table.builder().build())
             .getColumns().stream().map(column -> mapPrimaryKey(column, names)).collect(toList());
         table.ifPresent(t -> t.setColumns(columns));

@@ -187,8 +187,8 @@ class MySQLDatabaseEntityRelationshipGeneratorTest {
     @Test
     void testAddPrimaryKey() {
         when(parser.toPrimaryKey(""))
-                .thenReturn(PrimaryKey.builder().keyName(KEY1).build())
-                .thenReturn(PrimaryKey.builder().keyName(KEY2).build());
+                .thenReturn(PrimaryKey.builder().keyName(List.of(KEY1)).build())
+                .thenReturn(PrimaryKey.builder().keyName(List.of(KEY2)).build());
 
         tableOptional.get().setColumns(List.of(
             Column.builder().name(KEY1).build(),
@@ -199,8 +199,8 @@ class MySQLDatabaseEntityRelationshipGeneratorTest {
 
         assertThat(table.isPresent()).isTrue();
         assertThat(table.get().getPrimaryKeys().size()).isEqualTo(2);
-        assertThat(table.get().getPrimaryKeys().get(0).getKeyName()).isEqualTo(KEY1);
-        assertThat(table.get().getPrimaryKeys().get(1).getKeyName()).isEqualTo(KEY2);
+        assertThat(table.get().getPrimaryKeys().get(0).getKeyName().get(0)).isEqualTo(KEY1);
+        assertThat(table.get().getPrimaryKeys().get(1).getKeyName().get(0)).isEqualTo(KEY2);
 
         assertThat(table.get().getColumns().get(0).isPrimary()).isTrue();
         assertThat(table.get().getColumns().get(1).isPrimary()).isTrue();
@@ -210,14 +210,14 @@ class MySQLDatabaseEntityRelationshipGeneratorTest {
     void testAddPrimaryKey_whenNoPrimaryKeyFound() {
        when(parser.toPrimaryKey(""))
                 .thenReturn(null)
-                .thenReturn(PrimaryKey.builder().keyName(KEY2).build());
+                .thenReturn(PrimaryKey.builder().keyName(List.of(KEY2)).build());
 
         Optional<Table> table = generator.addPrimaryKey(Arrays.asList("", ""), tableOptional);
         verify(parser, times(2)).toPrimaryKey("");
 
         assertThat(table.isPresent()).isTrue();
         assertThat(table.get().getPrimaryKeys().size()).isEqualTo(1);
-        assertThat(table.get().getPrimaryKeys().get(0).getKeyName()).isEqualTo(KEY2);
+        assertThat(table.get().getPrimaryKeys().get(0).getKeyName().get(0)).isEqualTo(KEY2);
     }
 
     @Test

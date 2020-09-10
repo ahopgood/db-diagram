@@ -4,6 +4,7 @@ import com.alexander.diagrams.model.Column;
 import com.alexander.diagrams.model.ForeignKey;
 import com.alexander.diagrams.model.PrimaryKey;
 import com.alexander.diagrams.model.Table;
+import java.util.List;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -193,7 +194,7 @@ class MySqlRegexParserTest {
     void testToPrimaryKey() {
         String input = "  PRIMARY KEY (`id`),";
         PrimaryKey primaryKey = parser.toPrimaryKey(input);
-        assertThat(primaryKey.getKeyName()).isEqualTo("id");
+        assertThat(primaryKey.getKeyName()).isEqualTo(List.of("id"));
     }
 
     @Disabled
@@ -201,7 +202,7 @@ class MySqlRegexParserTest {
     void testToPrimaryKey_compositeKey() {
         String input = "PRIMARY KEY (`inventory_id`,`attribute_value_id`),";
         PrimaryKey primaryKey = parser.toPrimaryKey(input);
-        assertThat(primaryKey.getKeyName()).isEqualTo("inventory_id");
+        assertThat(primaryKey.getKeyName()).isEqualTo(List.of("inventory_id","attribute_value_id"));
     }
 
     @Test
