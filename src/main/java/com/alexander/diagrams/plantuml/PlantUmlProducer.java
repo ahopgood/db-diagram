@@ -101,6 +101,7 @@ public class PlantUmlProducer implements DiagramProducer {
     private static final String RIGHT_BRACE = "}";
     protected static final String COLOUR = "#FFAAAA";
     private static final String TABLE = "class %s << (T," + COLOUR + ") >> {";
+    private static final String FOREIGN_KEY = "<<FK>>";
 
     protected String tableFunction(Table table) {
         StringBuilder builder = new StringBuilder();
@@ -121,10 +122,15 @@ public class PlantUmlProducer implements DiagramProducer {
 
     protected String buildColumn(Column column) {
         StringBuilder builder = new StringBuilder();
+
         builder.append(TAB)
-                .append(FIELD)
-                .append(set(bold(column.getName())))
-                .append(setType(column));
+            .append(FIELD)
+            .append(set(bold(column.getName())))
+            .append(setType(column));
+
+        if (column.isForeign()) {
+            builder.append(set(FOREIGN_KEY));
+        }
         return builder.toString();
     }
 
@@ -165,7 +171,7 @@ public class PlantUmlProducer implements DiagramProducer {
     protected String buildForeignKey(ForeignKey foreignKey, Table table) {
         StringBuilder builder = new StringBuilder();
         builder.append(table.getName() + "::" + foreignKey.getForeignKeyName()
-            + " --> " + foreignKey.getSourceTable() + "::" + foreignKey.getSourceColumn());
+            + " -- " + foreignKey.getSourceTable() + "::" + foreignKey.getSourceColumn());
         return builder.toString();
     }
 }

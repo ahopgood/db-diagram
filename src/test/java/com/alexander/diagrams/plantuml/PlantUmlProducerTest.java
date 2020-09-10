@@ -80,7 +80,7 @@ class PlantUmlProducerTest {
         String columnsString = producer.buildColumns(Table.builder().columns(
                 Arrays.asList(Column.builder().build(), null)
         ).build());
-        assertThat(columnsString);
+        assertThat(columnsString).isEqualTo("\t{field} <b>null</b>\n");
     }
 
     @Test
@@ -88,7 +88,7 @@ class PlantUmlProducerTest {
         String columnsString = producer.buildColumns(Table.builder().columns(
                 Arrays.asList(Column.builder().build())
         ).build());
-        assertThat(columnsString);
+        assertThat(columnsString).isEqualTo("\t{field} <b>null</b>\n");
     }
 
     @Test
@@ -156,6 +156,19 @@ class PlantUmlProducerTest {
         assertThat(columnString).isEqualTo("\t{field} <b>Id</b> varchar(255)");
     }
 
+    @Test
+    void testBuildColumn_withForeignKey() {
+        String columnString = producer.buildColumn(Column.builder().name("Id").type("date").foreign(true).build());
+        assertThat(columnString).isEqualTo("\t{field} <b>Id</b> date <<FK>>");
+    }
+
+    @Disabled
+    @Test
+    void testBuildColumn_withPrimaryKey() {
+        String columnString = producer.buildColumn(Column.builder().name("Id").type("date").primary(true).build());
+        assertThat(columnString).isEqualTo("\t{field} <b>Id</b> date <<PK>>");
+    }
+
     @Disabled
     @Test
     void testBuildColumn_withAutoIncrement() {
@@ -200,7 +213,7 @@ class PlantUmlProducerTest {
         String foreignKeyString = producer.buildForeignKey(
             foreignKey,
             Table.builder().build());
-        assertThat(foreignKeyString).isEqualTo("null::Id --> People::Name");
+        assertThat(foreignKeyString).isEqualTo("null::Id -- People::Name");
     }
 
     @Test
@@ -211,7 +224,7 @@ class PlantUmlProducerTest {
                 .sourceColumn("Name")
                 .build(),
             table);
-        assertThat(foreignKeyString).isEqualTo("Products::null --> People::Name");
+        assertThat(foreignKeyString).isEqualTo("Products::null -- People::Name");
     }
 
     @Test
@@ -222,7 +235,7 @@ class PlantUmlProducerTest {
                 .sourceTable("People")
                 .build(),
             table);
-        assertThat(foreignKeyString).isEqualTo("Products::Id --> People::null");
+        assertThat(foreignKeyString).isEqualTo("Products::Id -- People::null");
     }
 
     @Test
@@ -233,7 +246,7 @@ class PlantUmlProducerTest {
                 .sourceColumn("Name")
                 .build(),
             table);
-        assertThat(foreignKeyString).isEqualTo("Products::Id --> null::Name");
+        assertThat(foreignKeyString).isEqualTo("Products::Id -- null::Name");
     }
 
     @Test
@@ -241,7 +254,7 @@ class PlantUmlProducerTest {
         String foreignKeyString = producer.buildForeignKey(
             foreignKey,
             table);
-        assertThat(foreignKeyString).isEqualTo("Products::Id --> People::Name");
+        assertThat(foreignKeyString).isEqualTo("Products::Id -- People::Name");
     }
 
 
@@ -285,7 +298,7 @@ class PlantUmlProducerTest {
         assertThat(producer.buildForeignKeys(
             table,
             Map.of(foreignKey.getSourceTable(), table)))
-            .isEqualTo("Products::Id --> People::Name\n");
+            .isEqualTo("Products::Id -- People::Name\n");
     }
 
     @Test
@@ -295,7 +308,7 @@ class PlantUmlProducerTest {
         assertThat(producer.buildForeignKeys(
             table,
             Map.of(foreignKey.getSourceTable(), table)))
-            .isEqualTo("Products::Id --> People::Name\n");
+            .isEqualTo("Products::Id -- People::Name\n");
     }
 
     @Test
@@ -305,7 +318,7 @@ class PlantUmlProducerTest {
         assertThat(producer.buildForeignKeys(
             table,
             Map.of(table.getName(), table)))
-            .isEqualTo("Products::Id --> People::Name\n");
+            .isEqualTo("Products::Id -- People::Name\n");
     }
 
     @Test
@@ -324,6 +337,6 @@ class PlantUmlProducerTest {
         assertThat(producer.buildForeignKeys(
             table,
             Map.of(foreignKey.getSourceTable(), table)))
-            .isEqualTo("Products::Id --> People::Name\n");
+            .isEqualTo("Products::Id -- People::Name\n");
     }
 }
