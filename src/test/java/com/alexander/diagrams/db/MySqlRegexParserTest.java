@@ -17,7 +17,7 @@ class MySqlRegexParserTest {
     void testToTable() {
         String input = "CREATE TABLE `attribute_values` (";
         Table table = parser.toTable(input);
-        assertThat(table.getColumns()).isNull();
+        assertThat(table.getColumns()).isEmpty();
         assertThat(table.getName()).isEqualTo("attribute_values");
     }
 
@@ -25,7 +25,7 @@ class MySqlRegexParserTest {
     void testToTable_whenNotACreateTableStatement() {
         String input = "  `id` int(11) NOT NULL AUTO_INCREMENT,";
         Table table = parser.toTable(input);
-        assertThat(table.getColumns()).isNull();
+        assertThat(table.getColumns()).isEmpty();
         assertThat(table.getName()).isEmpty();
     }
 

@@ -10,11 +10,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.Builder;
 
-
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
 
 @Builder
 public class DatabaseEntityRelationshipGenerator {
@@ -87,9 +85,9 @@ public class DatabaseEntityRelationshipGenerator {
         table.ifPresent(t -> t.setForeignKeys(foreignKeys));
 
         //Mark columns as foreign keys
-        List<String> names = foreignKeys.stream().map(key -> key.getForeignKeyName()).collect(Collectors.toList());
+        List<String> names = foreignKeys.stream().map(key -> key.getForeignKeyName()).collect(toList());
         List<Column> columns = table.orElse(Table.builder().build())
-            .getColumns().stream().map(column -> map(column, names)).collect(Collectors.toList());
+            .getColumns().stream().map(column -> map(column, names)).collect(toList());
         table.ifPresent(t -> t.setColumns(columns));
         return table;
     }
