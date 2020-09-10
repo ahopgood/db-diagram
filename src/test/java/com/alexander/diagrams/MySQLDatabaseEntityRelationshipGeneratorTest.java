@@ -62,9 +62,28 @@ class MySQLDatabaseEntityRelationshipGeneratorTest {
     }
 
     @Test
+    void testToTable() {
+        when(parser.toTable(isA(String.class))).thenReturn(Table.builder().name("test_table").build());
+
+        when(parser.toForeignKey(isA(String.class))).thenReturn(ForeignKey.builder().build());
+        when(parser.toColumn(isA(String.class))).thenReturn(Column.builder().build());
+        when(parser.toPrimaryKey(isA(String.class))).thenReturn(PrimaryKey.builder().build());
+
+        Optional<Table> table = generator.toTable(List.of("CREATE TABLE `test_table` ("));
+        assertThat(table.isPresent()).isTrue();
+        assertThat(table.get().getName()).isEqualTo("test_table");
+
+        verify(parser, times(1)).toForeignKey(isA(String.class));
+        verify(parser, times(1)).toColumn(isA(String.class));
+        verify(parser, times(1)).toPrimaryKey(isA(String.class));
+    }
+
+    @Test
     void testToTable_givenOnlyHeader() {
         when(parser.toTable(isA(String.class))).thenReturn(Table.builder().name("test_table").build());
+
         Optional<Table> table = generator.toTable(List.of("CREATE TABLE `test_table` ("));
+
         assertThat(table.isPresent()).isTrue();
         assertThat(table.get().getName()).isEqualTo("test_table");
     }
@@ -160,6 +179,7 @@ class MySQLDatabaseEntityRelationshipGeneratorTest {
         Optional<Table> table = generator.addForeignKey(Arrays.asList("",""), tableOptional);
         verify(parser, times(2)).toForeignKey("");
 
+        assertThat(table.isPresent()).isTrue();
         assertThat(table.get().getForeignKeys().size()).isEqualTo(1);
         assertThat(table.get().getForeignKeys().get(0).getForeignKeyName()).isEqualTo(KEY2);
     }
@@ -167,28 +187,37 @@ class MySQLDatabaseEntityRelationshipGeneratorTest {
     @Test
     void testAddPrimaryKey() {
         when(parser.toPrimaryKey(""))
-                .thenReturn(PrimaryKey.builder().keyName(KEY1).build())
-                .thenReturn(PrimaryKey.builder().keyName(KEY2).build());
+                .thenReturn(PrimaryKey.builder().keyName(List.of(KEY1)).build())
+                .thenReturn(PrimaryKey.builder().keyName(List.of(KEY2)).build());
+
+        tableOptional.get().setColumns(List.of(
+            Column.builder().name(KEY1).build(),
+            Column.builder().name(KEY2).build()));
 
         Optional<Table> table = generator.addPrimaryKey(Arrays.asList("",""), tableOptional);
         verify(parser, times(2)).toPrimaryKey("");
 
+        assertThat(table.isPresent()).isTrue();
         assertThat(table.get().getPrimaryKeys().size()).isEqualTo(2);
-        assertThat(table.get().getPrimaryKeys().get(0).getKeyName()).isEqualTo(KEY1);
-        assertThat(table.get().getPrimaryKeys().get(1).getKeyName()).isEqualTo(KEY2);
+        assertThat(table.get().getPrimaryKeys().get(0).getKeyName().get(0)).isEqualTo(KEY1);
+        assertThat(table.get().getPrimaryKeys().get(1).getKeyName().get(0)).isEqualTo(KEY2);
+
+        assertThat(table.get().getColumns().get(0).isPrimary()).isTrue();
+        assertThat(table.get().getColumns().get(1).isPrimary()).isTrue();
     }
 
     @Test
     void testAddPrimaryKey_whenNoPrimaryKeyFound() {
        when(parser.toPrimaryKey(""))
                 .thenReturn(null)
-                .thenReturn(PrimaryKey.builder().keyName(KEY2).build());
+                .thenReturn(PrimaryKey.builder().keyName(List.of(KEY2)).build());
 
         Optional<Table> table = generator.addPrimaryKey(Arrays.asList("", ""), tableOptional);
         verify(parser, times(2)).toPrimaryKey("");
 
+        assertThat(table.isPresent()).isTrue();
         assertThat(table.get().getPrimaryKeys().size()).isEqualTo(1);
-        assertThat(table.get().getPrimaryKeys().get(0).getKeyName()).isEqualTo(KEY2);
+        assertThat(table.get().getPrimaryKeys().get(0).getKeyName().get(0)).isEqualTo(KEY2);
     }
 
     @Test
