@@ -102,6 +102,7 @@ public class PlantUmlProducer implements DiagramProducer {
     protected static final String COLOUR = "#FFAAAA";
     private static final String TABLE = "class %s << (T," + COLOUR + ") >> {";
     private static final String FOREIGN_KEY = "<<FK>>";
+    private static final String PRIMARY_KEY = "<<PK>>";
 
     protected String tableFunction(Table table) {
         StringBuilder builder = new StringBuilder();
@@ -130,6 +131,10 @@ public class PlantUmlProducer implements DiagramProducer {
 
         if (column.isForeign()) {
             builder.append(set(FOREIGN_KEY));
+        }
+
+        if (column.isPrimary()) {
+            builder.append(set(PRIMARY_KEY));
         }
         return builder.toString();
     }

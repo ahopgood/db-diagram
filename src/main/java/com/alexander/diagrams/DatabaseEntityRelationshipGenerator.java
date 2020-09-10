@@ -3,6 +3,7 @@ package com.alexander.diagrams;
 import com.alexander.diagrams.db.DatabaseSyntaxParser;
 import com.alexander.diagrams.model.Column;
 import com.alexander.diagrams.model.ForeignKey;
+import com.alexander.diagrams.model.PrimaryKey;
 import com.alexander.diagrams.model.Table;
 import com.alexander.diagrams.plantuml.DiagramProducer;
 import com.alexander.diagrams.source.Source;
@@ -63,6 +64,7 @@ public class DatabaseEntityRelationshipGenerator {
                 .findFirst();
         table = addColumns(lines, table);
         table = addForeignKey(lines, table);
+        table = addPrimaryKey(lines, table);
         return table;
     }
 
@@ -87,12 +89,12 @@ public class DatabaseEntityRelationshipGenerator {
         //Mark columns as foreign keys
         List<String> names = foreignKeys.stream().map(key -> key.getForeignKeyName()).collect(toList());
         List<Column> columns = table.orElse(Table.builder().build())
-            .getColumns().stream().map(column -> map(column, names)).collect(toList());
+            .getColumns().stream().map(column -> mapForeignKey(column, names)).collect(toList());
         table.ifPresent(t -> t.setColumns(columns));
         return table;
     }
 
-    private Column map(Column column, List<String> keyNames) {
+    private Column mapForeignKey(Column column, List<String> keyNames) {
         boolean isForeign = keyNames.contains(column.getName());
         return Column.builder()
             .name(column.getName())
@@ -108,13 +110,34 @@ public class DatabaseEntityRelationshipGenerator {
     }
 
     Optional<Table> addPrimaryKey(List<String> lines, Optional<Table> table) {
-        table.ifPresent(t -> t.setPrimaryKeys(
-                lines.stream()
-                        .map(s -> parser.toPrimaryKey(s))
-                        .filter(Objects::nonNull)
-                        .collect(toList())
-        ));
+        List<PrimaryKey> primaryKeys = lines.stream()
+            .map(s -> parser.toPrimaryKey(s))
+            .filter(Objects::nonNull)
+            .collect(toList());
+
+        table.ifPresent(t -> t.setPrimaryKeys(primaryKeys));
+
+        //Mark columns as primary keys
+        List<String> names = primaryKeys.stream().map(key -> key.getKeyName()).collect(toList());
+        List<Column> columns = table.orElse(Table.builder().build())
+            .getColumns().stream().map(column -> mapPrimaryKey(column, names)).collect(toList());
+        table.ifPresent(t -> t.setColumns(columns));
         return table;
+    }
+
+    private Column mapPrimaryKey(Column column, List<String> keyNames) {
+        boolean isPrimary = keyNames.contains(column.getName());
+        return Column.builder()
+            .name(column.getName())
+            .scale(column.getScale())
+            .type(column.getType())
+            .autoIncrement(column.isAutoIncrement())
+            .notDefault(column.isNotDefault())
+            .defaultValue(column.getDefaultValue())
+            .primary(isPrimary)
+            .notNull(column.isNotNull())
+            .foreign(column.isForeign())
+            .build();
     }
 
     /**
