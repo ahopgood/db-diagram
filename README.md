@@ -33,8 +33,8 @@ generator.generate();
     * DatabaseEntityRelationshipGenerator should use the list of Strings to call the parser to create a table
 * Add graphviz check to PlantUmlProducer
 * ~~Check tables exist in diagram *before* adding the foreign key dependency in order to reduce vestigial arrows to empty class objects~~ toggleable now
-* Add primary key to field declaration or in the field block of the class diagram 
-* Add foreign key to field declaration or in the field block of the class diagram
+* ~~Add primary key to field declaration or in the field block of the class diagram~~ 
+* ~~Add foreign key to field declaration or in the field block of the class diagram~~
 * Add default value to field declaration
 * Investigate if a two way relationship between Table and Keys makes sense to simplify logic and signatures vs trade off of bending Demeter's law
 * Implement hexagonal architecture

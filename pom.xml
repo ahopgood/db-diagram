@@ -18,6 +18,8 @@
         <junit.version>5.5.2</junit.version>
         <assertj.version>3.13.2</assertj.version>
         <mockito.version>3.1.0</mockito.version>
+        <mariadb4j.version>2.4.0</mariadb4j.version>
+        <mysql-connector-java.version>8.0.21</mysql-connector-java.version>
         <!-- Plugins -->
         <jacoco-maven-plugin.version>0.8.5</jacoco-maven-plugin.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
@@ -73,6 +75,17 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>${commons-io.version}</version>
+        </dependency>
+        <!-- Database -->
+        <dependency>
+            <groupId>ch.vorburger.mariaDB4j</groupId>
+            <artifactId>mariaDB4j</artifactId>
+            <version>${mariadb4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql-connector-java.version}</version>
         </dependency>
     </dependencies>
     <build>
