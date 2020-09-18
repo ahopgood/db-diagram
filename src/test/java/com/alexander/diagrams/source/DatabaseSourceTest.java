@@ -8,8 +8,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 
@@ -23,13 +23,11 @@ class DatabaseSourceTest {
     private final String database = "test";
     private final String tablename = "attribute_types";
 
-    private DB db;
-    private Connection conn;
+    private static DB db;
+    private static Connection conn;
 
-    private DatabaseSource source = new DatabaseSource();
-
-    @BeforeEach
-    void setup() throws ManagedProcessException, SQLException {
+    @BeforeAll
+    static void setup() throws ManagedProcessException, SQLException {
         db = DB.newEmbeddedDB(3306);
         db.start();
         conn = DriverManager.getConnection("jdbc:mysql://localhost/test?useTimezone=true&serverTimezone=UTC", "root", "");
@@ -37,8 +35,8 @@ class DatabaseSourceTest {
         conn.prepareStatement(createAttributesTable()).execute();
     }
 
-    @AfterEach
-    void teardown() throws ManagedProcessException, SQLException {
+    @AfterAll
+    static void teardown() throws ManagedProcessException, SQLException {
         conn.close();
         db.stop();
     }
@@ -69,47 +67,60 @@ class DatabaseSourceTest {
 
     @Test
     void testHasNext() {
+        DatabaseSource source = DatabaseSource.builder()
+            .build();
         assertThat(source.hasNext()).isTrue();
         assertSourceSize(2, source);
     }
 
     @Test
     void testNext() {
+        DatabaseSource source = DatabaseSource.builder()
+            .build();
         assertThat(source.hasNext()).isTrue();
         assertThat(source.next()).hasSize(8);
-        assertThat(source.next()).hasSize(14);
+        assertThat(source.next()).hasSize(15);
 
     }
 
     @Test
     void testWhenWrongPassword_thenAuthenticationFailed() {
-        fail("Not Yet implemented");
+        assertThrows(IllegalArgumentException.class,
+            () ->  DatabaseSource.builder()
+                .build());
     }
 
     @Test
     void testWhenWrongUsername_thenAuthenticationFailed() {
-        fail("Not Yet implemented");
+        assertThrows(IllegalArgumentException.class,
+            () -> DatabaseSource.builder()
+                .build());
+
     }
 
     @Test
     void testWhenWrongUrl_thenAuthenticationFailed() {
-        fail("Not Yet implemented");
+        assertThrows(IllegalArgumentException.class,
+            () -> DatabaseSource.builder()
+                .build());
     }
 
     @Test
     void testWhenWrongDatabase_thenAuthenticationFailed() {
-        fail("Not Yet implemented");
+        assertThrows(IllegalArgumentException.class,
+            () -> DatabaseSource.builder()
+                .build());
     }
 
     @Test
     void testWhenTableDoesntExist() {
-        DatabaseSource source = new DatabaseSource();
+        DatabaseSource source = DatabaseSource.builder()
+            .build();
         assertThrows(RuntimeException.class,
             () -> source.getDescribeTable("unknownTable"));
     }
 
-
-    private String createAttributeTypesTable() {
+    private static String createAttributeTypesTable() {
         StringBuilder builder = new StringBuilder();
         builder.append("CREATE TABLE attribute_types (");
         builder.append("attribute_type_id varchar(36) NOT NULL PRIMARY KEY,");
@@ -121,7 +132,7 @@ class DatabaseSourceTest {
         return builder.toString();
     }
 
-    private String createAttributesTable() {
+    private static String createAttributesTable() {
         StringBuilder builder = new StringBuilder();
         builder.append("CREATE TABLE attributes (");
         builder.append("attribute_id varchar(36) NOT NULL PRIMARY KEY,");
