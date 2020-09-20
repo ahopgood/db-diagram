@@ -43,6 +43,7 @@ public class DatabaseSource implements Source {
                     tableNames.add(listTablesResult.getString(SHOW_TABLES_COLUMN_INDEX));
                 }
                 tableNamesIterator = tableNames.iterator();
+                listTablesResult.close();
             } finally {
                 conn.close();
             }
@@ -71,6 +72,8 @@ public class DatabaseSource implements Source {
                     String describeBlock = createTableResult.getString(DESCRIBE_TABLE_COLUMN_INDEX);
                     return describeBlock.lines().collect(Collectors.toList());
                 }
+
+                createTableResult.close();
             } finally {
                 conn.close();
             }

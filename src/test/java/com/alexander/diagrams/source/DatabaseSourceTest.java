@@ -101,7 +101,7 @@ class DatabaseSourceTest {
                 .username(rootUsername)
                 .password(rootPassword)
                 .databaseName(database)
-                .databaseUrl("0.0.0.0")
+                .databaseUrl("999.999.999.999")
                 .build());
     }
 
