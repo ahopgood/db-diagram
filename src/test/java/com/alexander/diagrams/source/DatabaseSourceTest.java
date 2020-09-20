@@ -2,12 +2,11 @@ package com.alexander.diagrams.source;
 
 import ch.vorburger.exec.ManagedProcessException;
 import ch.vorburger.mariadb4j.DB;
+import ch.vorburger.mariadb4j.DBConfiguration;
+import ch.vorburger.mariadb4j.DBConfigurationBuilder;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.LinkedList;
-import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -21,6 +20,7 @@ class DatabaseSourceTest {
     private final String rootUsername = "root";
     private final String rootPassword = "";
     private final String database = "test";
+    private final String databaseUrl = "localhost";
     private final String tablename = "attribute_types";
 
     private static DB db;
@@ -28,7 +28,11 @@ class DatabaseSourceTest {
 
     @BeforeAll
     static void setup() throws ManagedProcessException, SQLException {
-        db = DB.newEmbeddedDB(3306);
+        DBConfiguration configuration = DBConfigurationBuilder.newBuilder()
+            .setPort(3306)
+            .setSecurityDisabled(false)
+            .build();
+        db = DB.newEmbeddedDB(configuration);
         db.start();
         conn = DriverManager.getConnection("jdbc:mysql://localhost/test?useTimezone=true&serverTimezone=UTC", "root", "");
         conn.prepareStatement(createAttributeTypesTable()).execute();
@@ -42,32 +46,12 @@ class DatabaseSourceTest {
     }
 
     @Test
-    void testConnection() throws ManagedProcessException, SQLException {
-        ResultSet listTablesResult = conn.prepareStatement("SHOW TABLES;").executeQuery();
-        List<String> tablenames = new LinkedList<>();
-        while (listTablesResult.next()) {
-            String tablename = listTablesResult.getString(1);
-            System.out.println(tablename);
-            tablenames.add(tablename);
-        }
-
-//        describeTable();
-    }
-
-    private void describeTable(String tablename, Connection conn) throws SQLException {
-        ResultSet createTableResult = conn.prepareStatement(String.format("SHOW CREATE TABLE %s;", tablename)).executeQuery();
-        if (createTableResult.next()) {
-            String describeBlock = createTableResult.getString(2);
-
-            describeBlock.lines().forEach(
-                s -> System.out.println(s)
-            );
-        }
-    }
-
-    @Test
     void testHasNext() {
         DatabaseSource source = DatabaseSource.builder()
+            .username(rootUsername)
+            .password(rootPassword)
+            .databaseName(database)
+            .databaseUrl(databaseUrl)
             .build();
         assertThat(source.hasNext()).isTrue();
         assertSourceSize(2, source);
@@ -76,6 +60,10 @@ class DatabaseSourceTest {
     @Test
     void testNext() {
         DatabaseSource source = DatabaseSource.builder()
+            .username(rootUsername)
+            .password(rootPassword)
+            .databaseName(database)
+            .databaseUrl(databaseUrl)
             .build();
         assertThat(source.hasNext()).isTrue();
         assertThat(source.next()).hasSize(8);
@@ -85,36 +73,56 @@ class DatabaseSourceTest {
 
     @Test
     void testWhenWrongPassword_thenAuthenticationFailed() {
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(RuntimeException.class,
             () ->  DatabaseSource.builder()
+                .username(rootUsername)
+                .password("nothepassword")
+                .databaseName(database)
+                .databaseUrl(databaseUrl)
                 .build());
     }
 
     @Test
     void testWhenWrongUsername_thenAuthenticationFailed() {
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(RuntimeException.class,
             () -> DatabaseSource.builder()
+                .username("notheusername")
+                .password(rootPassword)
+                .databaseName(database)
+                .databaseUrl(databaseUrl)
                 .build());
 
     }
 
     @Test
     void testWhenWrongUrl_thenAuthenticationFailed() {
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(RuntimeException.class,
             () -> DatabaseSource.builder()
+                .username(rootUsername)
+                .password(rootPassword)
+                .databaseName(database)
+                .databaseUrl("0.0.0.0")
                 .build());
     }
 
     @Test
     void testWhenWrongDatabase_thenAuthenticationFailed() {
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(RuntimeException.class,
             () -> DatabaseSource.builder()
+                .username(rootUsername)
+                .password(rootPassword)
+                .databaseName("nothedatabase")
+                .databaseUrl(databaseUrl)
                 .build());
     }
 
     @Test
     void testWhenTableDoesntExist() {
         DatabaseSource source = DatabaseSource.builder()
+            .username(rootUsername)
+            .password(rootPassword)
+            .databaseName(database)
+            .databaseUrl(databaseUrl)
             .build();
         assertThrows(RuntimeException.class,
             () -> source.getDescribeTable("unknownTable"));
