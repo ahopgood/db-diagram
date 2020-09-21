@@ -1,7 +1,9 @@
 package com.alexander.diagrams.source;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
@@ -10,6 +12,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Builder;
 
+@SuppressFBWarnings(value = {"RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", "SQL_INJECTION_JDBC",
+    "SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING"},
+    justification = "https://github.com/spotbugs/spotbugs/issues/259, Table name is obtained from the DB itself not from user input")
 public class DatabaseSource implements Source {
 
     private static final int SHOW_TABLES_COLUMN_INDEX = 1;
@@ -23,6 +28,13 @@ public class DatabaseSource implements Source {
 
     private static final String CONNECTION_STRING = "jdbc:mysql://%s/%s?useTimezone=true&serverTimezone=UTC";
 
+    /**
+     * Creates a database source to read database create table statements.
+     * @param password the password for the account to use
+     * @param username the username for the account to use
+     * @param databaseName the name of the database schema to use
+     * @param databaseUrl the host (and optional port) of the database server e.g. localhost or 127.0.0.1:3306.
+     */
     @Builder
     public DatabaseSource(String password, String username, String databaseName, String databaseUrl) {
         this.password = password;
@@ -36,14 +48,14 @@ public class DatabaseSource implements Source {
         try {
             Connection conn = DriverManager
                 .getConnection(String.format(CONNECTION_STRING, databaseUrl, databaseName), username, password);
-            try {
-                ResultSet listTablesResult = conn.prepareStatement("SHOW TABLES;").executeQuery();
-                List<String> tableNames = new LinkedList<>();
-                while (listTablesResult.next()) {
-                    tableNames.add(listTablesResult.getString(SHOW_TABLES_COLUMN_INDEX));
+            try (PreparedStatement listTablesStatement = conn.prepareStatement("SHOW TABLES;")) {
+                try (ResultSet listTablesResult = listTablesStatement.executeQuery()) {
+                    List<String> tableNames = new LinkedList<>();
+                    while (listTablesResult.next()) {
+                        tableNames.add(listTablesResult.getString(SHOW_TABLES_COLUMN_INDEX));
+                    }
+                    tableNamesIterator = tableNames.iterator();
                 }
-                tableNamesIterator = tableNames.iterator();
-                listTablesResult.close();
             } finally {
                 conn.close();
             }
@@ -65,15 +77,16 @@ public class DatabaseSource implements Source {
 
     protected List<String> getDescribeTable(String tableName) {
         try {
-            Connection conn = DriverManager.getConnection(String.format(CONNECTION_STRING, databaseUrl, databaseName), username, password);
-            try {
-                ResultSet createTableResult = conn.prepareStatement(String.format("SHOW CREATE TABLE %s;", tableName)).executeQuery();
-                if (createTableResult.next()) {
-                    String describeBlock = createTableResult.getString(DESCRIBE_TABLE_COLUMN_INDEX);
-                    return describeBlock.lines().collect(Collectors.toList());
+            Connection conn = DriverManager
+                .getConnection(String.format(CONNECTION_STRING, databaseUrl, databaseName), username, password);
+            String query = String.format("SHOW CREATE TABLE %s;", tableName);
+            try (PreparedStatement showCreateTableStatement = conn.prepareStatement(query)) {
+                try (ResultSet createTableResult = showCreateTableStatement.executeQuery()) {
+                    if (createTableResult.next()) {
+                        String describeBlock = createTableResult.getString(DESCRIBE_TABLE_COLUMN_INDEX);
+                        return describeBlock.lines().collect(Collectors.toList());
+                    }
                 }
-
-                createTableResult.close();
             } finally {
                 conn.close();
             }
