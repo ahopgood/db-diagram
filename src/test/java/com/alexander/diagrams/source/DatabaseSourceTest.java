@@ -6,6 +6,7 @@ import ch.vorburger.mariadb4j.DBConfiguration;
 import ch.vorburger.mariadb4j.DBConfigurationBuilder;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -17,11 +18,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DatabaseSourceTest {
 
-    private final String rootUsername = "root";
-    private final String rootPassword = "";
-    private final String database = "test";
-    private final String databaseUrl = "localhost";
-    private final String tablename = "attribute_types";
+    private static final String rootUsername = "root";
+    private static final String rootPassword = "";
+    private static final String sourceUsername = "source";
+    private static final String sourcePassword = "sourcePassword";
+    private static final String database = "mydatabase";
+    private static final String databaseUrl = "localhost";
 
     private static DB db;
     private static Connection conn;
@@ -34,9 +36,27 @@ class DatabaseSourceTest {
             .build();
         db = DB.newEmbeddedDB(configuration);
         db.start();
-        conn = DriverManager.getConnection("jdbc:mysql://localhost/test?useTimezone=true&serverTimezone=UTC", "root", "");
-        conn.prepareStatement(createAttributeTypesTable()).execute();
-        conn.prepareStatement(createAttributesTable()).execute();
+        db.createDB(database, "root", "");
+        conn = DriverManager
+            .getConnection("jdbc:mysql://" + databaseUrl + "/" + database + "?useTimezone=true&serverTimezone=UTC",
+                rootUsername,
+                rootPassword);
+
+        PreparedStatement user = conn.prepareStatement(createUser());
+        user.execute();
+        user.closeOnCompletion();
+
+        PreparedStatement grantPrivileges = conn.prepareStatement(grantPrivileges());
+        grantPrivileges.execute();
+        grantPrivileges.closeOnCompletion();
+
+        PreparedStatement attributeTypes = conn.prepareStatement(createAttributeTypesTable());
+        attributeTypes.execute();
+        attributeTypes.closeOnCompletion();
+
+        PreparedStatement attributes = conn.prepareStatement(createAttributesTable());
+        attributes.execute();
+        attributes.closeOnCompletion();
     }
 
     @AfterAll
@@ -48,8 +68,8 @@ class DatabaseSourceTest {
     @Test
     void testHasNext() {
         DatabaseSource source = DatabaseSource.builder()
-            .username(rootUsername)
-            .password(rootPassword)
+            .username(sourceUsername)
+            .password(sourcePassword)
             .databaseName(database)
             .databaseUrl(databaseUrl)
             .build();
@@ -60,8 +80,8 @@ class DatabaseSourceTest {
     @Test
     void testNext() {
         DatabaseSource source = DatabaseSource.builder()
-            .username(rootUsername)
-            .password(rootPassword)
+            .username(sourceUsername)
+            .password(sourcePassword)
             .databaseName(database)
             .databaseUrl(databaseUrl)
             .build();
@@ -75,7 +95,7 @@ class DatabaseSourceTest {
     void testWhenWrongPassword_thenAuthenticationFailed() {
         assertThrows(RuntimeException.class,
             () ->  DatabaseSource.builder()
-                .username(rootUsername)
+                .username(sourceUsername)
                 .password("nothepassword")
                 .databaseName(database)
                 .databaseUrl(databaseUrl)
@@ -86,20 +106,19 @@ class DatabaseSourceTest {
     void testWhenWrongUsername_thenAuthenticationFailed() {
         assertThrows(RuntimeException.class,
             () -> DatabaseSource.builder()
-                .username("notheusername")
-                .password(rootPassword)
+                .username("nottheusername")
+                .password(sourcePassword)
                 .databaseName(database)
                 .databaseUrl(databaseUrl)
                 .build());
-
     }
 
     @Test
     void testWhenWrongUrl_thenAuthenticationFailed() {
         assertThrows(RuntimeException.class,
             () -> DatabaseSource.builder()
-                .username(rootUsername)
-                .password(rootPassword)
+                .username(sourceUsername)
+                .password(sourcePassword)
                 .databaseName(database)
                 .databaseUrl("999.999.999.999")
                 .build());
@@ -109,8 +128,8 @@ class DatabaseSourceTest {
     void testWhenWrongDatabase_thenAuthenticationFailed() {
         assertThrows(RuntimeException.class,
             () -> DatabaseSource.builder()
-                .username(rootUsername)
-                .password(rootPassword)
+                .username(sourceUsername)
+                .password(sourcePassword)
                 .databaseName("nothedatabase")
                 .databaseUrl(databaseUrl)
                 .build());
@@ -119,8 +138,8 @@ class DatabaseSourceTest {
     @Test
     void testWhenTableDoesntExist() {
         DatabaseSource source = DatabaseSource.builder()
-            .username(rootUsername)
-            .password(rootPassword)
+            .username(sourceUsername)
+            .password(sourcePassword)
             .databaseName(database)
             .databaseUrl(databaseUrl)
             .build();
@@ -156,6 +175,18 @@ class DatabaseSourceTest {
         builder.append("UNIQUE(attribute_type_id),");
         builder.append("FOREIGN KEY (attribute_type_id) REFERENCES attribute_types (attribute_type_id)");
         builder.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC ;");
+        return builder.toString();
+    }
+
+    private static String createUser() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("CREATE USER '" + sourceUsername + "'@'localhost' IDENTIFIED BY '" + sourcePassword + "';");
+        return builder.toString();
+    }
+
+    private static String grantPrivileges() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("GRANT ALL PRIVILEGES ON " + database + ".* TO '" + sourceUsername + "'@'localhost';");
         return builder.toString();
     }
 
