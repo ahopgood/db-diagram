@@ -41,7 +41,15 @@ class PlantUmlProducerTest {
 
     @Test
     void testGenerateDiagram_withNullForeignKeys() throws IOException {
-        producer.generateDiagram(Arrays.asList(table));
+        //Create a table with no foreign keys to test, resulting in a an empty string
+        Table test = Table.builder()
+            .name("Products")
+            .columns(Arrays.asList(
+                Column.builder().name("Id").type("date").build(),
+                Column.builder().name("Name").type("varchar").scale("255").build()
+            ))
+            .build();
+        producer.generateDiagram(Arrays.asList(test));
     }
 
     @Test

@@ -76,7 +76,7 @@ public class PlantUmlProducer implements DiagramProducer {
         Map<String, Table> tableMap = toMap(tables);
         diagramSource.append(
             tables.stream().map(table -> buildForeignKeys(table, tableMap))
-                .filter(string -> nonNull(string) && !string.trim().isEmpty())
+                .filter(string -> !string.trim().isEmpty())
                 .collect(joining("", "", NEWLINE))
         );
         diagramSource.append(END).append(NEWLINE);
