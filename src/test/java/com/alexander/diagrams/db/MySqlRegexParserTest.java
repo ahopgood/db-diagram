@@ -4,6 +4,7 @@ import com.alexander.diagrams.model.Column;
 import com.alexander.diagrams.model.ForeignKey;
 import com.alexander.diagrams.model.PrimaryKey;
 import com.alexander.diagrams.model.Table;
+import com.alexander.diagrams.model.UniqueConstraint;
 import java.util.List;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -210,7 +211,15 @@ class MySqlRegexParserTest {
     }
 
     @Test
-    void testToUniqueConstraint() {
+    void testToUniqueConstraint_whenNotAUniqueConstraint() {
         assertThat(parser.toUniqueConstraint(" aBa ")).isNull();
     }
+
+    @Test
+    void testToUniqueConstraint() {
+        assertThat(parser.toUniqueConstraint(" "))
+            .isEqualToComparingFieldByField(
+                UniqueConstraint.builder().indexName(" ").build());
+    }
+
 }
