@@ -26,7 +26,7 @@ generator.generate();
 ## To do
 * Standardise input sources:
     * ~~FileSource~~ 
-    * DbSource
+    * ~~DbSource~~
 * Refactor to separate out concerns correctly:
     * ~~Runner class has functionality in it that should be encapsulated in a Source~~
     * ~~DatabaseEntityRelationshipGenerator should be responsible for using a source to obtain a List of Strings describing on a table by table basis.~~
@@ -41,8 +41,8 @@ generator.generate();
     * Use ArchUnit to enforce layering
     * Create Immutable models for business logic
     * Change execution order when building Table, Column, ForeignKey and PrimaryKey
-* Use `show tables from database` to list database tables
-* Use `show create table tablename` to create files for processing
+* ~~Use `show tables from database` to list database tables~~
+* ~~Use `show create table tablename` to create files for processing~~
 * Update ERDProducer to operate on Table, Column and Foreign Key objects
     * Specify an DiagramProducer interface
     * Create a DotDiagramProducer implementation
