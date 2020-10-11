@@ -43,6 +43,8 @@ class PlantUmlProducerTest {
             .sourceTable("People")
             .sourceColumn("Name")
             .build();
+
+        System.setProperty("PLANTUML_LIMIT_SIZE", "");
     }
 
     @Test
@@ -69,7 +71,7 @@ class PlantUmlProducerTest {
             ))
             .build();
 
-        assertThat(System.getProperty("PLANTUML_LIMIT_SIZE")).isEqualTo(null);
+        assertThat(System.getProperty("PLANTUML_LIMIT_SIZE")).isEqualTo("");
 
         producer = PlantUmlProducer.builder()
             .title(name)
