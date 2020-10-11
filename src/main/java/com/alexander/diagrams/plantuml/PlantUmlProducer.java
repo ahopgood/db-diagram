@@ -25,18 +25,18 @@ import static java.util.stream.Collectors.joining;
 @SuppressFBWarnings(value = {"WEAK_FILENAMEUTILS", "PATH_TRAVERSAL_OUT", "UPM_UNCALLED_PRIVATE_METHOD"},
     justification = "WEAK_FILENAMEUTILS: Null byte injection is fixed in Java 7u40 and higher https://bugs.java.com/bugdatabase/view_bug.do?bug_id=8014846. "
         + "PATH_TRAVERSAL_OUT FilenameUtils.getName() strips out the path from the filename preventing path traversal,"
-        + " the file will be written to a location relative to the running code." +
-        "UPM_UNCALLED_PRIVATE_METHOD: Lombok default reflective calls.")
-
-/**
+        + " the file will be written to a location relative to the running code."
+        + "UPM_UNCALLED_PRIVATE_METHOD: Lombok default reflective calls.")
+/*
  * Class to create a PlantUML diagram.
  * @param title The diagram title
  * @param filename The name of the output file, location relative to executing code
  * @param showOrphanForeignKeys toggles whether or not to show foreign key relationships that don't have a table
  *                              known to the producer, these orphan relationships will often point to an empty
  *                              table.
- * @param plantumlLimitSize maximum resolution size of the generated image; 4096 by default translating to an image of 4096x4096 (16,777,216) pixels.
- */
+ * @param plantumlLimitSize maximum resolution size of the generated image; 4096 by default translating to an image of
+ *                          4096x4096 (16,777,216) pixels.
+*/
 public class PlantUmlProducer implements DiagramProducer {
 
     private final String title;
