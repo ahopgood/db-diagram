@@ -22,10 +22,11 @@ import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
 
 @Builder
-@SuppressFBWarnings(value = {"WEAK_FILENAMEUTILS", "PATH_TRAVERSAL_OUT"},
+@SuppressFBWarnings(value = {"WEAK_FILENAMEUTILS", "PATH_TRAVERSAL_OUT", "UPM_UNCALLED_PRIVATE_METHOD"},
     justification = "WEAK_FILENAMEUTILS: Null byte injection is fixed in Java 7u40 and higher https://bugs.java.com/bugdatabase/view_bug.do?bug_id=8014846. "
         + "PATH_TRAVERSAL_OUT FilenameUtils.getName() strips out the path from the filename preventing path traversal,"
-        + " the file will be written to a location relative to the running code.")
+        + " the file will be written to a location relative to the running code." +
+        "UPM_UNCALLED_PRIVATE_METHOD: Lombok default reflective calls.")
 
 /**
  * Class to create a PlantUML diagram.
