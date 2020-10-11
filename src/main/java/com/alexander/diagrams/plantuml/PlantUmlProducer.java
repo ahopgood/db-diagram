@@ -26,6 +26,16 @@ import static java.util.stream.Collectors.joining;
     justification = "WEAK_FILENAMEUTILS: Null byte injection is fixed in Java 7u40 and higher https://bugs.java.com/bugdatabase/view_bug.do?bug_id=8014846. "
         + "PATH_TRAVERSAL_OUT FilenameUtils.getName() strips out the path from the filename preventing path traversal,"
         + " the file will be written to a location relative to the running code.")
+
+/**
+ * Class to create a PlantUML diagram.
+ * @param title The diagram title
+ * @param filename The name of the output file, location relative to executing code
+ * @param showOrphanForeignKeys toggles whether or not to show foreign key relationships that don't have a table
+ *                              known to the producer, these orphan relationships will often point to an empty
+ *                              table.
+ * @param plantumlLimitSize maximum resolution size of the generated image; 4096 by default translating to an image of 4096x4096 (16,777,216) pixels.
+ */
 public class PlantUmlProducer implements DiagramProducer {
 
     private final String title;
@@ -36,32 +46,6 @@ public class PlantUmlProducer implements DiagramProducer {
     private final int plantumlLimitSize = 4096;
 
     private static final String PLANTUML_LIMIT_SIZE_KEY = "PLANTUML_LIMIT_SIZE";
-
-//    /**
-//     * Class to create a PlantUML diagram.
-//     * @param title The diagram title
-//     * @param filename The name of the output file, location relative to executing code
-//     */
-//    public PlantUmlProducer(String title, String filename) {
-//        this.title = title;
-//        this.filename = FilenameUtils.getName(filename);
-//        this.showOrphanForeignKeys = false;
-//    }
-//
-//    /**
-//     * Class to create a PlantUML diagram.
-//     * @param title The diagram title
-//     * @param filename The name of the output file, location relative to executing code
-//     * @param showOrphanForeignKeys toggles whether or not to show foreign key relationships that don't have a table
-//     *                              known to the producer, these orphan relationships will often point to an empty
-//     *                              table.
-//     */
-//    public PlantUmlProducer(String title, String filename, boolean showOrphanForeignKeys) {
-//        this.title = title;
-//        this.filename = FilenameUtils.getName(filename);
-//        this.showOrphanForeignKeys = showOrphanForeignKeys;
-//    }
-
     private static final String START = "@startuml";
     private static final String END = "@enduml";
     private static final String TITLE = "Title: %s";
