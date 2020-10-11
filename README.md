@@ -10,6 +10,7 @@ DiagramProducer producer = PlantUmlProducer.builder()
     .filename(system + ".png")
     .title(system)
     .showOrphanForeignKeys(true)
+    .plantumlLimitSize(4094) //default size
     .build();
 
 DatabaseSyntaxParser parser = new MySqlRegexParser();

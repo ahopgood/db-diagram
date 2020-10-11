@@ -30,32 +30,37 @@ public class PlantUmlProducer implements DiagramProducer {
 
     private final String title;
     private final String filename;
-    private final boolean showOrphanForeignKeys;
+    @Builder.Default
+    private final boolean showOrphanForeignKeys = false;
+    @Builder.Default
+    private final int plantumlLimitSize = 4096;
 
-    /**
-     * Class to create a PlantUML diagram.
-     * @param title The diagram title
-     * @param filename The name of the output file, location relative to executing code
-     */
-    public PlantUmlProducer(String title, String filename) {
-        this.title = title;
-        this.filename = FilenameUtils.getName(filename);
-        this.showOrphanForeignKeys = false;
-    }
+    private static final String PLANTUML_LIMIT_SIZE_KEY = "PLANTUML_LIMIT_SIZE";
 
-    /**
-     * Class to create a PlantUML diagram.
-     * @param title The diagram title
-     * @param filename The name of the output file, location relative to executing code
-     * @param showOrphanForeignKeys toggles whether or not to show foreign key relationships that don't have a table
-     *                              known to the producer, these orphan relationships will often point to an empty
-     *                              table.
-     */
-    public PlantUmlProducer(String title, String filename, boolean showOrphanForeignKeys) {
-        this.title = title;
-        this.filename = FilenameUtils.getName(filename);
-        this.showOrphanForeignKeys = showOrphanForeignKeys;
-    }
+//    /**
+//     * Class to create a PlantUML diagram.
+//     * @param title The diagram title
+//     * @param filename The name of the output file, location relative to executing code
+//     */
+//    public PlantUmlProducer(String title, String filename) {
+//        this.title = title;
+//        this.filename = FilenameUtils.getName(filename);
+//        this.showOrphanForeignKeys = false;
+//    }
+//
+//    /**
+//     * Class to create a PlantUML diagram.
+//     * @param title The diagram title
+//     * @param filename The name of the output file, location relative to executing code
+//     * @param showOrphanForeignKeys toggles whether or not to show foreign key relationships that don't have a table
+//     *                              known to the producer, these orphan relationships will often point to an empty
+//     *                              table.
+//     */
+//    public PlantUmlProducer(String title, String filename, boolean showOrphanForeignKeys) {
+//        this.title = title;
+//        this.filename = FilenameUtils.getName(filename);
+//        this.showOrphanForeignKeys = showOrphanForeignKeys;
+//    }
 
     private static final String START = "@startuml";
     private static final String END = "@enduml";
@@ -82,6 +87,9 @@ public class PlantUmlProducer implements DiagramProducer {
         diagramSource.append(END).append(NEWLINE);
 
         System.out.println(diagramSource.toString());
+
+        System.setProperty(PLANTUML_LIMIT_SIZE_KEY, "" + plantumlLimitSize);
+
         SourceStringReader reader = new SourceStringReader(diagramSource.toString());
         try (OutputStream png = new FileOutputStream(Paths.get(FilenameUtils.getName(filename)).toString())) {
             reader.generateImage(png);

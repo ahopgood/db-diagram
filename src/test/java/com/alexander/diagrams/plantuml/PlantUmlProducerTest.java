@@ -22,9 +22,16 @@ class PlantUmlProducerTest {
     private Table table;
     private ForeignKey foreignKey;
 
+    private final String name = "My Diagram";
+    private final String filename = "mydiagram.png";
+
     @BeforeEach
     void setup() {
-        producer = new PlantUmlProducer("My Diagram", "mydiagram.png");
+
+        producer = PlantUmlProducer.builder()
+            .title(name)
+            .filename(filename)
+            .build();
         table = Table.builder()
                 .name("Products")
                 .columns(Arrays.asList(
@@ -38,7 +45,6 @@ class PlantUmlProducerTest {
             .build();
     }
 
-
     @Test
     void testGenerateDiagram_withNullForeignKeys() throws IOException {
         //Create a table with no foreign keys to test, resulting in a an empty string
@@ -50,6 +56,29 @@ class PlantUmlProducerTest {
             ))
             .build();
         producer.generateDiagram(Arrays.asList(test));
+    }
+
+    @Test
+    void testGenerateDiagram_withNewPlantumlLimitSize() throws IOException {
+        //Create a table with no foreign keys to test, resulting in a an empty string
+        Table test = Table.builder()
+            .name("Products")
+            .columns(Arrays.asList(
+                Column.builder().name("Id").type("date").build(),
+                Column.builder().name("Name").type("varchar").scale("255").build()
+            ))
+            .build();
+
+        assertThat(System.getProperty("PLANTUML_LIMIT_SIZE")).isEqualTo(null);
+
+        producer = PlantUmlProducer.builder()
+            .title(name)
+            .filename(filename)
+            .plantumlLimitSize(8192)
+            .build();
+
+        producer.generateDiagram(Arrays.asList(test));
+        assertThat(System.getProperty("PLANTUML_LIMIT_SIZE")).isEqualTo("" + 8192);
     }
 
     @Test
@@ -309,7 +338,12 @@ class PlantUmlProducerTest {
 
     @Test
     void testBuildForeignKeys_whenShowOrphanForeignKeysIsTrue_andSourceTablePresentInMap() {
-        producer = new PlantUmlProducer("My Diagram", "mydiagram.png", true);
+        producer = PlantUmlProducer.builder()
+            .title("My Diagram")
+            .filename("mydiagram.png")
+            .showOrphanForeignKeys(true)
+            .build();
+
         table.setForeignKeys(List.of(foreignKey));
         assertThat(producer.buildForeignKeys(
             table,
@@ -319,7 +353,12 @@ class PlantUmlProducerTest {
 
     @Test
     void testBuildForeignKeys_whenShowOrphanForeignKeysIsTrue_andSourceTableIsMissingInMap() {
-        producer = new PlantUmlProducer("My Diagram", "mydiagram.png", true);
+        producer = PlantUmlProducer.builder()
+            .title("My Diagram")
+            .filename("mydiagram.png")
+            .showOrphanForeignKeys(true)
+            .build();
+
         table.setForeignKeys(List.of(foreignKey));
         assertThat(producer.buildForeignKeys(
             table,
