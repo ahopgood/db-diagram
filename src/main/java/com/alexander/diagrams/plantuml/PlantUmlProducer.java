@@ -54,10 +54,10 @@ public class PlantUmlProducer implements DiagramProducer {
     @Builder.Default
     private final boolean generatePlantUmlFile = false;
 
-    /* File extension strings */
+    /** File extension strings */
     private static final String PLANTUML_EXT = ".puml";
     private static final String PNG_EXT = ".png";
-    /* Diagram related values */
+    /** Diagram related values */
     private static final String PLANTUML_LIMIT_SIZE_KEY = "PLANTUML_LIMIT_SIZE";
     private static final String START = "@startuml";
     private static final String END = "@enduml";
@@ -83,11 +83,7 @@ public class PlantUmlProducer implements DiagramProducer {
         );
         diagramSource.append(END).append(NEWLINE);
 
-        if (generatePlantUmlFile) {
-            generatePlantUmlFile(diagramSource);
-        } else {
-            System.out.println(diagramSource.toString());
-        }
+        generatePlantUml(diagramSource);
 
         System.setProperty(PLANTUML_LIMIT_SIZE_KEY, "" + plantUmlLimitSize);
 
@@ -189,19 +185,23 @@ public class PlantUmlProducer implements DiagramProducer {
         return builder.toString();
     }
 
-    protected void generatePlantUmlFile(StringBuilder builder) {
-        Optional.ofNullable(filename)
-            .orElseThrow(() -> new RuntimeException("A filename is required to generate a " + PLANTUML_EXT + " file."));
-        try {
-            Path file = Files.createFile(Path.of(filename + PLANTUML_EXT));
-            BufferedWriter writer = Files.newBufferedWriter(file, Charsets.toCharset("UTF-8"));
+    protected void generatePlantUml(StringBuilder diagramSource) {
+        if (generatePlantUmlFile) {
+            Optional.ofNullable(filename)
+                .orElseThrow(() -> new RuntimeException("A filename is required to generate a " + PLANTUML_EXT + " file."));
             try {
-                writer.write(builder.toString());
-            } finally {
-                writer.close();
+                Path file = Files.createFile(Path.of(filename + PLANTUML_EXT));
+                BufferedWriter writer = Files.newBufferedWriter(file, Charsets.toCharset("UTF-8"));
+                try {
+                    writer.write(diagramSource.toString());
+                } finally {
+                    writer.close();
+                }
+            } catch (IOException e) {
+                throw new RuntimeException("Unable to create plantuml file for filename: " + filename, e);
             }
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to create plantuml file for filename: " + filename, e);
+        } else {
+            System.out.println(diagramSource.toString());
         }
     }
 }

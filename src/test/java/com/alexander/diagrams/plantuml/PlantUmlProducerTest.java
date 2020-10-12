@@ -17,8 +17,7 @@ import org.junit.jupiter.api.Test;
 
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 class PlantUmlProducerTest {
 
@@ -426,13 +425,23 @@ class PlantUmlProducerTest {
     }
 
     @Test
-    void testGeneratePlantUmlFile_givenNoFilenameSet_thenThrowRuntimeException() {
+    void testGeneratePlantUml_givenNoFilenameSet_whenGenerateTrue_thenThrowRuntimeException() {
         PlantUmlProducer producer = PlantUmlProducer.builder()
+            .generatePlantUmlFile(true)
             .build();
         Throwable exception = assertThrows(RuntimeException.class,
-            () -> producer.generatePlantUmlFile(new StringBuilder()));
+            () -> producer.generatePlantUml(new StringBuilder()));
 
         assertThat(exception.getLocalizedMessage())
             .isEqualTo("A filename is required to generate a .puml file.");
+    }
+
+    @Test
+    void testGeneratePlantUml_givenNoFilenameSet_whenGenerateFalse_thenThrowRuntimeException() {
+        PlantUmlProducer producer = PlantUmlProducer.builder()
+            .generatePlantUmlFile(false)
+            .build();
+
+        assertDoesNotThrow(() -> producer.generatePlantUml(new StringBuilder()));
     }
 }
