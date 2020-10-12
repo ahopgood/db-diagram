@@ -54,10 +54,10 @@ public class PlantUmlProducer implements DiagramProducer {
     @Builder.Default
     private final boolean generatePlantUmlFile = false;
 
-    /** File extension strings */
+    /** File extension strings. */
     private static final String PLANTUML_EXT = ".puml";
     private static final String PNG_EXT = ".png";
-    /** Diagram related values */
+    /** Diagram related values. */
     private static final String PLANTUML_LIMIT_SIZE_KEY = "PLANTUML_LIMIT_SIZE";
     private static final String START = "@startuml";
     private static final String END = "@enduml";
@@ -188,7 +188,8 @@ public class PlantUmlProducer implements DiagramProducer {
     protected void generatePlantUml(StringBuilder diagramSource) {
         if (generatePlantUmlFile) {
             Optional.ofNullable(filename)
-                .orElseThrow(() -> new RuntimeException("A filename is required to generate a " + PLANTUML_EXT + " file."));
+                .orElseThrow(() ->
+                    new RuntimeException("A filename is required to generate a " + PLANTUML_EXT + " file."));
             try {
                 Path file = Files.createFile(Path.of(filename + PLANTUML_EXT));
                 BufferedWriter writer = Files.newBufferedWriter(file, Charsets.toCharset("UTF-8"));
