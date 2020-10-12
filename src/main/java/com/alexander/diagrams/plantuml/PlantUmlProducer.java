@@ -4,9 +4,12 @@ import com.alexander.diagrams.model.Column;
 import com.alexander.diagrams.model.ForeignKey;
 import com.alexander.diagrams.model.Table;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,6 +19,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.Builder;
 import net.sourceforge.plantuml.SourceStringReader;
+import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FilenameUtils;
 
 import static java.util.Objects.nonNull;
@@ -34,8 +38,10 @@ import static java.util.stream.Collectors.joining;
  * @param showOrphanForeignKeys toggles whether or not to show foreign key relationships that don't have a table
  *                              known to the producer, these orphan relationships will often point to an empty
  *                              table.
- * @param plantumlLimitSize maximum resolution size of the generated image; 4096 by default translating to an image of
+ * @param plantUmlLimitSize maximum resolution size of the generated image; 4096 by default translating to an image of
  *                          4096x4096 (16,777,216) pixels.
+ * @param generatePlantUmlFile boolean, defaults to false. Indicates if a plantuml file should be generated
+ * using the filename parameter
 */
 public class PlantUmlProducer implements DiagramProducer {
 
@@ -44,8 +50,14 @@ public class PlantUmlProducer implements DiagramProducer {
     @Builder.Default
     private final boolean showOrphanForeignKeys = false;
     @Builder.Default
-    private final int plantumlLimitSize = 4096;
+    private final int plantUmlLimitSize = 4096;
+    @Builder.Default
+    private final boolean generatePlantUmlFile = false;
 
+    /* File extension strings */
+    private static final String PLANTUML_EXT = ".puml";
+    private static final String PNG_EXT = ".png";
+    /* Diagram related values */
     private static final String PLANTUML_LIMIT_SIZE_KEY = "PLANTUML_LIMIT_SIZE";
     private static final String START = "@startuml";
     private static final String END = "@enduml";
@@ -71,9 +83,13 @@ public class PlantUmlProducer implements DiagramProducer {
         );
         diagramSource.append(END).append(NEWLINE);
 
-        System.out.println(diagramSource.toString());
+        if (generatePlantUmlFile) {
+            generatePlantUmlFile(diagramSource);
+        } else {
+            System.out.println(diagramSource.toString());
+        }
 
-        System.setProperty(PLANTUML_LIMIT_SIZE_KEY, "" + plantumlLimitSize);
+        System.setProperty(PLANTUML_LIMIT_SIZE_KEY, "" + plantUmlLimitSize);
 
         SourceStringReader reader = new SourceStringReader(diagramSource.toString());
         try (OutputStream png = new FileOutputStream(Paths.get(FilenameUtils.getName(filename)).toString())) {
@@ -171,5 +187,21 @@ public class PlantUmlProducer implements DiagramProducer {
         builder.append(table.getName() + "::" + foreignKey.getForeignKeyName()
             + " -- " + foreignKey.getSourceTable() + "::" + foreignKey.getSourceColumn());
         return builder.toString();
+    }
+
+    protected void generatePlantUmlFile(StringBuilder builder) {
+        Optional.ofNullable(filename)
+            .orElseThrow(() -> new RuntimeException("A filename is required to generate a " + PLANTUML_EXT + " file."));
+        try {
+            Path file = Files.createFile(Path.of(filename + PLANTUML_EXT));
+            BufferedWriter writer = Files.newBufferedWriter(file, Charsets.toCharset("UTF-8"));
+            try {
+                writer.write(builder.toString());
+            } finally {
+                writer.close();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to create plantuml file for filename: " + filename, e);
+        }
     }
 }
