@@ -7,9 +7,10 @@ Source source = FileSource.builder()
     .build();
 
 DiagramProducer producer = PlantUmlProducer.builder()
-    .filename(system + ".png")
+    .filename(system)
     .title(system)
     .showOrphanForeignKeys(true)
+    .generatePlantUmlFile(true)
     .plantumlLimitSize(4094) //default size
     .build();
 

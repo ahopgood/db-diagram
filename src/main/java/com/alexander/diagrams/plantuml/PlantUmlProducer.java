@@ -88,7 +88,7 @@ public class PlantUmlProducer implements DiagramProducer {
         System.setProperty(PLANTUML_LIMIT_SIZE_KEY, "" + plantUmlLimitSize);
 
         SourceStringReader reader = new SourceStringReader(diagramSource.toString());
-        try (OutputStream png = new FileOutputStream(Paths.get(FilenameUtils.getName(filename)).toString())) {
+        try (OutputStream png = new FileOutputStream(Paths.get(FilenameUtils.getName(filename + PNG_EXT)).toString())) {
             reader.generateImage(png);
         } catch (IOException e) {
             e.printStackTrace();
@@ -191,8 +191,9 @@ public class PlantUmlProducer implements DiagramProducer {
                 .orElseThrow(() ->
                     new RuntimeException("A filename is required to generate a " + PLANTUML_EXT + " file."));
             try {
-                Path file = Files.createFile(Path.of(filename + PLANTUML_EXT));
-                BufferedWriter writer = Files.newBufferedWriter(file, Charsets.toCharset("UTF-8"));
+                Path file = Path.of(filename + PLANTUML_EXT);
+                BufferedWriter writer = Files
+                    .newBufferedWriter(file, Charsets.toCharset("UTF-8"));
                 try {
                     writer.write(diagramSource.toString());
                 } finally {
