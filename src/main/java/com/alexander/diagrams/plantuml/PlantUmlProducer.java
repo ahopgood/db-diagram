@@ -4,9 +4,12 @@ import com.alexander.diagrams.model.Column;
 import com.alexander.diagrams.model.ForeignKey;
 import com.alexander.diagrams.model.Table;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,16 +19,30 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.Builder;
 import net.sourceforge.plantuml.SourceStringReader;
+import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FilenameUtils;
 
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
 
 @Builder
-@SuppressFBWarnings(value = {"WEAK_FILENAMEUTILS", "PATH_TRAVERSAL_OUT"},
+@SuppressFBWarnings(value = {"WEAK_FILENAMEUTILS", "PATH_TRAVERSAL_OUT", "UPM_UNCALLED_PRIVATE_METHOD"},
     justification = "WEAK_FILENAMEUTILS: Null byte injection is fixed in Java 7u40 and higher https://bugs.java.com/bugdatabase/view_bug.do?bug_id=8014846. "
         + "PATH_TRAVERSAL_OUT FilenameUtils.getName() strips out the path from the filename preventing path traversal,"
-        + " the file will be written to a location relative to the running code.")
+        + " the file will be written to a location relative to the running code."
+        + "UPM_UNCALLED_PRIVATE_METHOD: Lombok default reflective calls.")
+/*
+ * Class to create a PlantUML diagram.
+ * @param title The diagram title
+ * @param filename The name of the output file, location relative to executing code
+ * @param showOrphanForeignKeys toggles whether or not to show foreign key relationships that don't have a table
+ *                              known to the producer, these orphan relationships will often point to an empty
+ *                              table.
+ * @param plantUmlLimitSize maximum resolution size of the generated image; 4096 by default translating to an image of
+ *                          4096x4096 (16,777,216) pixels.
+ * @param generatePlantUmlFile boolean, defaults to false. Indicates if a plantuml file should be generated
+ * using the filename parameter
+*/
 public class PlantUmlProducer implements DiagramProducer {
 
     private final String title;
@@ -33,35 +50,15 @@ public class PlantUmlProducer implements DiagramProducer {
     @Builder.Default
     private final boolean showOrphanForeignKeys = false;
     @Builder.Default
-    private final int plantumlLimitSize = 4096;
+    private final int plantUmlLimitSize = 4096;
+    @Builder.Default
+    private final boolean generatePlantUmlFile = false;
 
+    /** File extension strings. */
+    private static final String PLANTUML_EXT = ".puml";
+    private static final String PNG_EXT = ".png";
+    /** Diagram related values. */
     private static final String PLANTUML_LIMIT_SIZE_KEY = "PLANTUML_LIMIT_SIZE";
-
-//    /**
-//     * Class to create a PlantUML diagram.
-//     * @param title The diagram title
-//     * @param filename The name of the output file, location relative to executing code
-//     */
-//    public PlantUmlProducer(String title, String filename) {
-//        this.title = title;
-//        this.filename = FilenameUtils.getName(filename);
-//        this.showOrphanForeignKeys = false;
-//    }
-//
-//    /**
-//     * Class to create a PlantUML diagram.
-//     * @param title The diagram title
-//     * @param filename The name of the output file, location relative to executing code
-//     * @param showOrphanForeignKeys toggles whether or not to show foreign key relationships that don't have a table
-//     *                              known to the producer, these orphan relationships will often point to an empty
-//     *                              table.
-//     */
-//    public PlantUmlProducer(String title, String filename, boolean showOrphanForeignKeys) {
-//        this.title = title;
-//        this.filename = FilenameUtils.getName(filename);
-//        this.showOrphanForeignKeys = showOrphanForeignKeys;
-//    }
-
     private static final String START = "@startuml";
     private static final String END = "@enduml";
     private static final String TITLE = "Title: %s";
@@ -86,12 +83,12 @@ public class PlantUmlProducer implements DiagramProducer {
         );
         diagramSource.append(END).append(NEWLINE);
 
-        System.out.println(diagramSource.toString());
+        generatePlantUml(diagramSource);
 
-        System.setProperty(PLANTUML_LIMIT_SIZE_KEY, "" + plantumlLimitSize);
+        System.setProperty(PLANTUML_LIMIT_SIZE_KEY, "" + plantUmlLimitSize);
 
         SourceStringReader reader = new SourceStringReader(diagramSource.toString());
-        try (OutputStream png = new FileOutputStream(Paths.get(FilenameUtils.getName(filename)).toString())) {
+        try (OutputStream png = new FileOutputStream(Paths.get(FilenameUtils.getName(filename + PNG_EXT)).toString())) {
             reader.generateImage(png);
         } catch (IOException e) {
             e.printStackTrace();
@@ -186,5 +183,27 @@ public class PlantUmlProducer implements DiagramProducer {
         builder.append(table.getName() + "::" + foreignKey.getForeignKeyName()
             + " -- " + foreignKey.getSourceTable() + "::" + foreignKey.getSourceColumn());
         return builder.toString();
+    }
+
+    protected void generatePlantUml(StringBuilder diagramSource) {
+        if (generatePlantUmlFile) {
+            Optional.ofNullable(filename)
+                .orElseThrow(() ->
+                    new RuntimeException("A filename is required to generate a " + PLANTUML_EXT + " file."));
+            try {
+                Path file = Path.of(filename + PLANTUML_EXT);
+                BufferedWriter writer = Files
+                    .newBufferedWriter(file, Charsets.toCharset("UTF-8"));
+                try {
+                    writer.write(diagramSource.toString());
+                } finally {
+                    writer.close();
+                }
+            } catch (IOException e) {
+                throw new RuntimeException("Unable to create plantuml file for filename: " + filename, e);
+            }
+        } else {
+            System.out.println(diagramSource.toString());
+        }
     }
 }
