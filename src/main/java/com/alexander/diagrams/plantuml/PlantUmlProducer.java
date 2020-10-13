@@ -87,12 +87,7 @@ public class PlantUmlProducer implements DiagramProducer {
 
         System.setProperty(PLANTUML_LIMIT_SIZE_KEY, "" + plantUmlLimitSize);
 
-        SourceStringReader reader = new SourceStringReader(diagramSource.toString());
-        try (OutputStream png = new FileOutputStream(Paths.get(FilenameUtils.getName(filename + PNG_EXT)).toString())) {
-            reader.generateImage(png);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        generateDiagramFile(diagramSource);
     }
 
     Map<String, Table> toMap(List<Table> tables) {
@@ -204,6 +199,18 @@ public class PlantUmlProducer implements DiagramProducer {
             }
         } else {
             System.out.println(diagramSource.toString());
+        }
+    }
+
+    protected void generateDiagramFile(StringBuilder diagramSource) {
+        Optional.ofNullable(filename)
+            .orElseThrow(() ->
+                new RuntimeException("A filename is required to generate a " + PNG_EXT + " file."));
+        SourceStringReader reader = new SourceStringReader(diagramSource.toString());
+        try (OutputStream png = new FileOutputStream(Paths.get(FilenameUtils.getName(filename + PNG_EXT)).toString())) {
+            reader.generateImage(png);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
