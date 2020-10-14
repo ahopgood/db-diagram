@@ -18,6 +18,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.Builder;
+import net.sourceforge.plantuml.FileFormatOption;
 import net.sourceforge.plantuml.SourceStringReader;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FilenameUtils;
@@ -48,6 +49,8 @@ public class PlantUmlProducer implements DiagramProducer {
     private final String title;
     private final String filename;
     @Builder.Default
+    private final OutputFileFormat outputFileFormat = OutputFileFormat.PNG;
+    @Builder.Default
     private final boolean showOrphanForeignKeys = false;
     @Builder.Default
     private final int plantUmlLimitSize = 4096;
@@ -57,6 +60,7 @@ public class PlantUmlProducer implements DiagramProducer {
     /** File extension strings. */
     private static final String PLANTUML_EXT = ".puml";
     private static final String PNG_EXT = ".png";
+    private static final String SVG_EXT = ".svg";
     /** Diagram related values. */
     private static final String PLANTUML_LIMIT_SIZE_KEY = "PLANTUML_LIMIT_SIZE";
     private static final String START = "@startuml";
@@ -87,12 +91,7 @@ public class PlantUmlProducer implements DiagramProducer {
 
         System.setProperty(PLANTUML_LIMIT_SIZE_KEY, "" + plantUmlLimitSize);
 
-        SourceStringReader reader = new SourceStringReader(diagramSource.toString());
-        try (OutputStream png = new FileOutputStream(Paths.get(FilenameUtils.getName(filename + PNG_EXT)).toString())) {
-            reader.generateImage(png);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        generateDiagramFile(diagramSource);
     }
 
     Map<String, Table> toMap(List<Table> tables) {
@@ -204,6 +203,26 @@ public class PlantUmlProducer implements DiagramProducer {
             }
         } else {
             System.out.println(diagramSource.toString());
+        }
+    }
+
+    protected void generateDiagramFile(StringBuilder diagramSource) {
+        generateDiagramFile(diagramSource, outputFileFormat);
+    }
+
+    private void generateDiagramFile(StringBuilder diagramSource, OutputFileFormat format) {
+        String suffix = format.getPlantUmlFormat().getFileSuffix();
+        Optional.ofNullable(filename)
+            .orElseThrow(() ->
+                new RuntimeException("A filename is required to generate a " + suffix + " file."));
+
+        SourceStringReader reader = new SourceStringReader(diagramSource.toString());
+        String outputFile = FilenameUtils.getName(filename + suffix);
+
+        try (OutputStream os = new FileOutputStream(Paths.get(outputFile).toString())) {
+            reader.generateImage(os, new FileFormatOption(format.getPlantUmlFormat()));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

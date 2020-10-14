@@ -11,6 +11,7 @@ DiagramProducer producer = PlantUmlProducer.builder()
     .title(system)
     .showOrphanForeignKeys(true)
     .generatePlantUmlFile(true)
+    .outputFileFormat(OutputFileFormat.PNG) //default, can use SVG
     .plantumlLimitSize(4094) //default size
     .build();
 

@@ -431,6 +431,9 @@ class PlantUmlProducerTest {
             .isEqualTo("Products::Id -- People::Name\n");
     }
 
+    private static final String PUML_EXT = ".puml";
+    private final Path outputPuml = Paths.get(filename + PUML_EXT);
+
     @Test
     void testGeneratePlantUml_givenNoFilenameSet_whenGenerateTrue_thenThrowRuntimeException() {
         PlantUmlProducer producer = PlantUmlProducer.builder()
@@ -444,7 +447,7 @@ class PlantUmlProducerTest {
     }
 
     @Test
-    void testGeneratePlantUml_givenNoFilenameSet_whenGenerateFalse_thenThrowRuntimeException() {
+    void testGeneratePlantUml_givenNoFilenameSet_thenGenerateFalse() {
         PlantUmlProducer producer = PlantUmlProducer.builder()
             .generatePlantUmlFile(false)
             .build();
@@ -454,25 +457,21 @@ class PlantUmlProducerTest {
 
     @Test
     void testGeneratePlantUml_givenFilename_whenGenerateTrue() {
-        Path outputFile = Paths.get(filename + ".puml");
-        if (outputFile.toFile().exists()) {
-            outputFile.toFile().delete();
-        }
+        tidyupFile(outputPuml);
         PlantUmlProducer producer = PlantUmlProducer.builder()
             .generatePlantUmlFile(true)
             .filename(filename)
             .build();
 
         producer.generatePlantUml(new StringBuilder());
-        assertThat(Files.exists(outputFile))
+        assertThat(Files.exists(outputPuml))
             .as("puml file should be generated").isTrue();
     }
 
     @Test
     void testGeneratePlantUml_givenFilename_whenGenerateTrue_overwrite() throws IOException {
-        Path outputFile = Paths.get(filename + ".puml");
-        if (!outputFile.toFile().exists()) {
-            outputFile.toFile().createNewFile();
+        if (!outputPuml.toFile().exists()) {
+            outputPuml.toFile().createNewFile();
         }
 
         PlantUmlProducer producer = PlantUmlProducer.builder()
@@ -481,7 +480,95 @@ class PlantUmlProducerTest {
             .build();
 
         producer.generatePlantUml(new StringBuilder());
-        assertThat(Files.exists(outputFile))
+        assertThat(Files.exists(outputPuml))
             .as("puml file should be generated").isTrue();
+    }
+
+    private static final String PNG_EXT = ".png";
+    private final Path outputPng = Paths.get(filename + PNG_EXT);
+
+    @Test
+    void testGenerateDiagramFile_givenNoFilenameSet_thenThrowRuntimeException() {
+        PlantUmlProducer producer = PlantUmlProducer.builder()
+            .generatePlantUmlFile(true)
+            .build();
+        Throwable exception = assertThrows(RuntimeException.class,
+            () -> producer.generateDiagramFile(new StringBuilder()));
+
+        assertThat(exception.getLocalizedMessage())
+            .isEqualTo("A filename is required to generate a .png file.");
+    }
+
+    @Test
+    void testGenerateDiagramFile_givenFilename_whenGenerateTrue() {
+        tidyupFile(outputPng);
+
+        PlantUmlProducer producer = PlantUmlProducer.builder()
+            .generatePlantUmlFile(true)
+            .filename(filename)
+            .build();
+
+        producer.generateDiagramFile(new StringBuilder());
+        assertThat(Files.exists(outputPng))
+            .as(".png file should be generated").isTrue();
+    }
+
+    @Test
+    void testDiagramFile_givenFilename_whenGenerateTrue_thenOverwrite() throws IOException {
+        if (!outputPng.toFile().exists()) {
+            outputPng.toFile().createNewFile();
+        }
+
+        PlantUmlProducer producer = PlantUmlProducer.builder()
+            .generatePlantUmlFile(true)
+            .filename(filename)
+            .build();
+
+        producer.generateDiagramFile(new StringBuilder());
+        assertThat(Files.exists(outputPng))
+            .as(".png file should be generated").isTrue();
+    }
+
+    private static final String SVG_EXT = ".svg";
+    private final Path outputSvg = Paths.get(filename + SVG_EXT);
+
+    @Test
+    void testDiagramFile_givenSVGThenGenerateSVG() throws IOException {
+        if (!outputSvg.toFile().exists()) {
+            outputSvg.toFile().createNewFile();
+        }
+
+        PlantUmlProducer producer = PlantUmlProducer.builder()
+            .generatePlantUmlFile(true)
+            .filename(filename)
+            .outputFileFormat(OutputFileFormat.SVG)
+            .build();
+
+        producer.generateDiagramFile(new StringBuilder());
+        assertThat(Files.exists(outputSvg))
+            .as(".svg file should be generated").isTrue();
+    }
+
+    @Test
+    void testDiagramFile_givenPNGThenGeneratePNG() throws IOException {
+        if (!outputPng.toFile().exists()) {
+            outputPng.toFile().createNewFile();
+        }
+
+        PlantUmlProducer producer = PlantUmlProducer.builder()
+            .generatePlantUmlFile(true)
+            .filename(filename)
+            .outputFileFormat(OutputFileFormat.PNG)
+            .build();
+
+        producer.generateDiagramFile(new StringBuilder());
+        assertThat(Files.exists(outputPng))
+            .as(".png file should be generated").isTrue();
+    }
+
+    private void tidyupFile(Path filePath) {
+        if (filePath.toFile().exists()) {
+            filePath.toFile().delete();
+        }
     }
 }
