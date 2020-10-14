@@ -510,11 +510,11 @@ class PlantUmlProducerTest {
 
         producer.generateDiagramFile(new StringBuilder());
         assertThat(Files.exists(outputPng))
-            .as("png file should be generated").isTrue();
+            .as(".png file should be generated").isTrue();
     }
 
     @Test
-    void testDiagramFile_givenFilename_whenGenerateTrue_overwrite() throws IOException {
+    void testDiagramFile_givenFilename_whenGenerateTrue_thenOverwrite() throws IOException {
         if (!outputPng.toFile().exists()) {
             outputPng.toFile().createNewFile();
         }
@@ -526,7 +526,44 @@ class PlantUmlProducerTest {
 
         producer.generateDiagramFile(new StringBuilder());
         assertThat(Files.exists(outputPng))
-            .as("png file should be generated").isTrue();
+            .as(".png file should be generated").isTrue();
+    }
+
+    private static final String SVG_EXT = ".svg";
+    private final Path outputSvg = Paths.get(filename + SVG_EXT);
+
+    @Test
+    void testDiagramFile_givenSVGThenGenerateSVG() throws IOException {
+        if (!outputSvg.toFile().exists()) {
+            outputSvg.toFile().createNewFile();
+        }
+
+        PlantUmlProducer producer = PlantUmlProducer.builder()
+            .generatePlantUmlFile(true)
+            .filename(filename)
+            .outputFileFormat(OutputFileFormat.SVG)
+            .build();
+
+        producer.generateDiagramFile(new StringBuilder());
+        assertThat(Files.exists(outputSvg))
+            .as(".svg file should be generated").isTrue();
+    }
+
+    @Test
+    void testDiagramFile_givenPNGThenGeneratePNG() throws IOException {
+        if (!outputPng.toFile().exists()) {
+            outputPng.toFile().createNewFile();
+        }
+
+        PlantUmlProducer producer = PlantUmlProducer.builder()
+            .generatePlantUmlFile(true)
+            .filename(filename)
+            .outputFileFormat(OutputFileFormat.PNG)
+            .build();
+
+        producer.generateDiagramFile(new StringBuilder());
+        assertThat(Files.exists(outputPng))
+            .as(".png file should be generated").isTrue();
     }
 
     private void tidyupFile(Path filePath) {
