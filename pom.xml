@@ -15,9 +15,10 @@
         <lombok.version>1.18.10</lombok.version>
         <jackson-databind.version>2.10.0</jackson-databind.version>
         <commons-io.version>2.6</commons-io.version>
-        <junit.version>5.5.2</junit.version>
+        <junit.version>5.6.2</junit.version>
         <assertj.version>3.13.2</assertj.version>
         <mockito.version>3.1.0</mockito.version>
+        <archunit.version>0.14.1</archunit.version>
         <mariadb4j.version>2.4.0</mariadb4j.version>
         <mysql-connector-java.version>8.0.21</mysql-connector-java.version>
         <!-- Plugins -->
@@ -59,6 +60,18 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.tngtech.archunit</groupId>
+            <artifactId>archunit-junit5-api</artifactId>
+            <version>${archunit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.tngtech.archunit</groupId>
+            <artifactId>archunit-junit5-engine</artifactId>
+            <version>${archunit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

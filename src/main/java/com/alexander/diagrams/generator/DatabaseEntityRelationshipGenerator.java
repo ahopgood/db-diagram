@@ -1,11 +1,11 @@
-package com.alexander.diagrams;
+package com.alexander.diagrams.generator;
 
 import com.alexander.diagrams.db.DatabaseSyntaxParser;
+import com.alexander.diagrams.diagram.DiagramProducer;
 import com.alexander.diagrams.model.Column;
 import com.alexander.diagrams.model.ForeignKey;
 import com.alexander.diagrams.model.PrimaryKey;
 import com.alexander.diagrams.model.Table;
-import com.alexander.diagrams.plantuml.DiagramProducer;
 import com.alexander.diagrams.source.Source;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,8 +29,7 @@ public class DatabaseEntityRelationshipGenerator {
      * @param source The {@link Source} of database information
      */
     public DatabaseEntityRelationshipGenerator(DatabaseSyntaxParser parser,
-                                               DiagramProducer producer,
-                                               Source source) {
+                                               DiagramProducer producer,Source source) {
         this.parser = parser;
         this.producer = producer;
         this.source = source;

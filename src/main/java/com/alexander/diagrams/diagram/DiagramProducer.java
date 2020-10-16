@@ -1,4 +1,4 @@
-package com.alexander.diagrams.plantuml;
+package com.alexander.diagrams.diagram;
 
 import com.alexander.diagrams.model.Table;
 import java.util.List;

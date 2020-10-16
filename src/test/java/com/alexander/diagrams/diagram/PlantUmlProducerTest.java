@@ -1,4 +1,4 @@
-package com.alexander.diagrams.plantuml;
+package com.alexander.diagrams.diagram;
 
 import com.alexander.diagrams.model.Column;
 import com.alexander.diagrams.model.ForeignKey;

@@ -27,7 +27,7 @@ generator.generate();
 ```
 
 ## To do
-* Standardise input sources:
+* ~~Standardise input sources:~~
     * ~~FileSource~~ 
     * ~~DbSource~~
 * Refactor to separate out concerns correctly:
@@ -47,6 +47,6 @@ generator.generate();
 * ~~Use `show tables from database` to list database tables~~
 * ~~Use `show create table tablename` to create files for processing~~
 * Update ERDProducer to operate on Table, Column and Foreign Key objects
-    * Specify an DiagramProducer interface
-    * Create a DotDiagramProducer implementation
-    * Output the `.dot` file for importing elsewhere
+    * ~~Specify an DiagramProducer interface~~
+    * ~~Create a DotDiagramProducer implementation~~
+    * ~~Output the `.dot` file for importing elsewhere~~

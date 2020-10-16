@@ -2,8 +2,9 @@ package com.alexander.diagrams;
 
 import com.alexander.diagrams.db.DatabaseSyntaxParser;
 import com.alexander.diagrams.db.MySqlRegexParser;
-import com.alexander.diagrams.plantuml.DiagramProducer;
-import com.alexander.diagrams.plantuml.PlantUmlProducer;
+import com.alexander.diagrams.diagram.DiagramProducer;
+import com.alexander.diagrams.diagram.PlantUmlProducer;
+import com.alexander.diagrams.generator.DatabaseEntityRelationshipGenerator;
 import com.alexander.diagrams.source.FileSource;
 import com.alexander.diagrams.source.Source;
 import java.io.File;

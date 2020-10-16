@@ -1,11 +1,12 @@
-package com.alexander.diagrams;
+package com.alexander.diagrams.generator;
 
 import com.alexander.diagrams.db.DatabaseSyntaxParser;
+import com.alexander.diagrams.generator.DatabaseEntityRelationshipGenerator;
 import com.alexander.diagrams.model.Column;
 import com.alexander.diagrams.model.ForeignKey;
 import com.alexander.diagrams.model.PrimaryKey;
 import com.alexander.diagrams.model.Table;
-import com.alexander.diagrams.plantuml.DiagramProducer;
+import com.alexander.diagrams.diagram.DiagramProducer;
 import com.alexander.diagrams.source.Source;
 import java.io.File;
 import java.util.Arrays;
@@ -17,7 +18,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
 class MySQLDatabaseEntityRelationshipGeneratorTest {
