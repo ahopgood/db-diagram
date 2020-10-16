@@ -16,7 +16,7 @@ import lombok.Builder;
 import static java.util.stream.Collectors.toList;
 
 @Builder
-public class DatabaseEntityRelationshipGenerator {
+public class DatabaseEntityRelationshipGenerator implements Generator {
 
     private final DatabaseSyntaxParser parser;
     private final DiagramProducer producer;
@@ -38,7 +38,7 @@ public class DatabaseEntityRelationshipGenerator {
     /**
      * Generate a diagram using the provided {@link Source}.
      */
-    public void generate() throws Exception {
+    public void generate() {
         List<Optional<Table>> tables = new LinkedList<>();
         while (source.hasNext()) {
             tables.add(toTable(source.next()));
@@ -50,7 +50,7 @@ public class DatabaseEntityRelationshipGenerator {
     }
 
     /**
-     * Convert a line of lines representing a database create statement into a Table object.
+     * Convert a list of lines representing a database create statement into a Table object.
       * @param lines The List of Strings to convert to a table.
      * @return {@link Table}
      */
@@ -144,7 +144,7 @@ public class DatabaseEntityRelationshipGenerator {
      * @param tables a list of {@link Table}s to convert into a diagram
      * @throws Exception catch-all Exception handling
      */
-    void toDiagram(List<Table> tables) throws Exception {
+    void toDiagram(List<Table> tables) {
         Optional.ofNullable(tables)
             .orElseThrow(() -> new RuntimeException("Unable to convert null Table list to a diagram"));
         if (tables.size() > 0) {

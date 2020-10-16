@@ -5,5 +5,5 @@ import java.util.List;
 
 public interface DiagramProducer {
 
-    void generateDiagram(List<Table> tables) throws Exception;
+    void generateDiagram(List<Table> tables);
 }
