@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 
-public class ArchitectureIT {
+public class ArchitectureTest {
 
     private static JavaClasses importedClasses;
 
@@ -98,6 +98,7 @@ public class ArchitectureIT {
             .whereLayer("Source").mayOnlyBeAccessedByLayers("Generator")
             .whereLayer("Diagram").mayOnlyBeAccessedByLayers("Generator")
             .whereLayer("Database").mayOnlyBeAccessedByLayers("Generator")
+            .whereLayer("Model").mayOnlyBeAccessedByLayers("Generator", "Diagram", "Database")
             .check(importedClasses);
     }
 
