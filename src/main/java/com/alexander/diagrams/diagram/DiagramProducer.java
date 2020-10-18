@@ -1,9 +1,9 @@
-package com.alexander.diagrams.plantuml;
+package com.alexander.diagrams.diagram;
 
 import com.alexander.diagrams.model.Table;
 import java.util.List;
 
 public interface DiagramProducer {
 
-    void generateDiagram(List<Table> tables) throws Exception;
+    void generateDiagram(List<Table> tables);
 }

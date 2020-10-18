@@ -1,6 +1,6 @@
 package com.alexander.diagrams.source;
 
-import com.alexander.diagrams.DatabaseEntityRelationshipGenerator;
+import com.alexander.diagrams.generator.DatabaseEntityRelationshipGenerator;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
