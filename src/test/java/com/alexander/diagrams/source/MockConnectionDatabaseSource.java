@@ -16,7 +16,7 @@ public class MockConnectionDatabaseSource extends DatabaseSource {
     @Builder(builderMethodName = "subbuilder")
     public MockConnectionDatabaseSource(String password, String username, String databaseName, String databaseUrl,
                                         Connection connection) {
-        super(password, username, databaseName, databaseUrl);
+        super(password, username, databaseName, databaseUrl, null);
         this.connection = connection;
     }
 

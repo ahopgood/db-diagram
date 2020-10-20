@@ -34,13 +34,19 @@ public class DatabaseSource implements Source {
      * @param username the username for the account to use
      * @param databaseName the name of the database schema to use
      * @param databaseUrl the host (and optional port) of the database server e.g. localhost or 127.0.0.1:3306.
+     * @param tableNames (optional) a {@link List} of Strings representing a specific set of table names to use as a
+     *                   source instead of using the init() method to pull all possible table names from the database.
      */
     @Builder
-    public DatabaseSource(String password, String username, String databaseName, String databaseUrl) {
+    public DatabaseSource(String password, String username, String databaseName, String databaseUrl,
+                          List<String> tableNames) {
         this.password = password;
         this.username = username;
         this.databaseName = databaseName;
         this.databaseUrl = databaseUrl;
+        if (tableNames != null) {
+            this.tableNamesIterator = tableNames.iterator();
+        }
     }
 
     private void init() {
