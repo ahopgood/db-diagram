@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
+import java.util.List;
 import lombok.Builder;
 import lombok.experimental.SuperBuilder;
 import org.junit.jupiter.api.AfterAll;
@@ -84,6 +85,19 @@ class DatabaseSourceTest {
             .build();
         assertThat(source.hasNext()).isTrue();
         assertSourceSize(2, source);
+    }
+
+    @Test
+    void testHasNext_givenTableNames() {
+        DatabaseSource source = DatabaseSource.builder()
+            .username(sourceUsername)
+            .password(sourcePassword)
+            .databaseName(database)
+            .databaseUrl(databaseUrl)
+            .tableNames(List.of("attribute_types"))
+            .build();
+        assertThat(source.hasNext()).isTrue();
+        assertSourceSize(1, source);
     }
 
     @Test

@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 
-public class ArchitectureTest {
+public class ArchitectureIT {
 
     private static JavaClasses importedClasses;
 
