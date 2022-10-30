@@ -8,7 +8,8 @@ import lombok.Getter;
 
 @Builder
 @Getter
-@SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD", justification = "Lombok default method")
+@SuppressFBWarnings(value = {"UPM_UNCALLED_PRIVATE_METHOD","EI_EXPOSE_REP2","EI_EXPOSE_REP"},
+    justification = "Lombok default method")
 public class PrimaryKey {
     @Builder.Default
     private final List<String> keyName = new LinkedList<>();

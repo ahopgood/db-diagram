@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import lombok.Builder;
 
 @SuppressFBWarnings(value = {"RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", "SQL_INJECTION_JDBC",
-    "SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING"},
+    "SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING", "EI_EXPOSE_REP2"},
     justification = "https://github.com/spotbugs/spotbugs/issues/259, Table name is obtained from the DB itself not from user input")
 public class DatabaseSource implements Source {
 
