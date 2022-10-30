@@ -282,16 +282,16 @@
         </plugins>
     </build>
 
-    <distributionManagement>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <name>9b1cc809328d-snapshots</name>
-            <url>https://artifactory.alexanderhopgood.com/artifactory/libs-snapshots-local</url>
-        </snapshotRepository>
-        <repository>
-            <id>central</id>
-            <name>9b1cc809328d-releases</name>
-            <url>https://artifactory.alexanderhopgood.com/artifactory/libs-release-local</url>
-        </repository>
-    </distributionManagement>
+<!--    <distributionManagement>-->
+<!--        <snapshotRepository>-->
+<!--            <id>snapshots</id>-->
+<!--            <name>9b1cc809328d-snapshots</name>-->
+<!--            <url>https://artifactory.alexanderhopgood.com/artifactory/libs-snapshots-local</url>-->
+<!--        </snapshotRepository>-->
+<!--        <repository>-->
+<!--            <id>central</id>-->
+<!--            <name>9b1cc809328d-releases</name>-->
+<!--            <url>https://artifactory.alexanderhopgood.com/artifactory/libs-release-local</url>-->
+<!--        </repository>-->
+<!--    </distributionManagement>-->
 </project>
