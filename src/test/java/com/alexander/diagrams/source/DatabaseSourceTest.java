@@ -43,6 +43,7 @@ class DatabaseSourceTest {
         DBConfiguration configuration = DBConfigurationBuilder.newBuilder()
             .setPort(3306)
             .setSecurityDisabled(false)
+            .addArg("--user=root")
             .build();
         db = DB.newEmbeddedDB(configuration);
         db.start();
