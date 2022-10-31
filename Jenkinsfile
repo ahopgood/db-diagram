@@ -3,6 +3,7 @@ pipeline {
     stages {
         stage('build') {
             steps {
+                sh 'apt update && apt install -y libncurses5'
                 sh 'mvn --version'
                 sh 'mvn clean install'
             }
