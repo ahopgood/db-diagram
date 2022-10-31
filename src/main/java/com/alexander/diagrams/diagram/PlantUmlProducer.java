@@ -220,7 +220,7 @@ public class PlantUmlProducer implements DiagramProducer {
         String outputFile = FilenameUtils.getName(filename + suffix);
 
         try (OutputStream os = new FileOutputStream(Paths.get(outputFile).toString())) {
-            reader.generateImage(os, new FileFormatOption(format.getPlantUmlFormat()));
+            reader.outputImage(os, new FileFormatOption(format.getPlantUmlFormat()));
         } catch (IOException e) {
             e.printStackTrace();
         }
