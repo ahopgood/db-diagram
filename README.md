@@ -114,3 +114,8 @@ DiagramProducer producer = PlantUmlProducer.builder()
     * ~~Specify an DiagramProducer interface~~
     * ~~Create a DotDiagramProducer implementation~~
     * ~~Output the `.dot` file for importing elsewhere~~
+
+## Other Similar work
+[https://github.com/KarnerTh/mermerd](https://github.com/KarnerTh/mermerd)
+* `go install github.com/KarnerTh/mermerd@latest`
+* Uses `npm install -g @mermaid-js/mermaid-cli`
