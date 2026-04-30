@@ -6,7 +6,7 @@ pipeline {
                 sh '''
                 # SHORT TERM FIX due to build image issues
                 # GPG is required for the package signing key
-                apt install gpg
+                #apt install gpg
                 
                 # Download the signing key to a new keyring
                 wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
